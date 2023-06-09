@@ -73,7 +73,7 @@ public class Wheel : MonoBehaviour
     [Tooltip("The radius of the wheel.")]
     [SerializeField] private float wheelRadius;
 
-    [Tooltip("Time it takes to lerp between wheelAngle and steerAngle.")]
+    [Tooltip("Time it takes to lerp between wheelAngle and steerAngle. The higher this value is, the faster the lerping between the two angles, and vice versa.")]
     [SerializeField] private float steerTime;
 
     /// <summary>
