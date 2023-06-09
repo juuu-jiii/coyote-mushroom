@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum WheelPosition
+{
+    FrontLeft,
+    FrontRight,
+    RearLeft,
+    RearRight
+}
+
 public class Wheel : MonoBehaviour
 {
     [Header("Rigidbody")]
@@ -13,7 +21,7 @@ public class Wheel : MonoBehaviour
     [SerializeField] private float restLength;
     [Tooltip("Controls how much the spring compresses and expands (and therefore how far the wheel moves up and down).")]
     [SerializeField] private float springTravel;
-    [Tooltip("Stiffness of the spring. The higher the value, the more upward (spring) force gets generated to push the car off the ground.")]
+    [Tooltip("Stiffness of the spring. The higher the value, the more upward (spring) force gets generated to push the vehicle off the ground.")]
     [SerializeField] private float springStiffness;
     [Tooltip("Stiffness of the damper. The higher the value, the larger the force acting in the direction opposite that of the spring force.")]
     [SerializeField] private float damperStiffness;
@@ -39,7 +47,7 @@ public class Wheel : MonoBehaviour
     public float currSpringLength;
 
     /// <summary>
-    /// The upward force that is generated to push the car off the ground, against gravity.
+    /// The upward force that is generated to push the vehicle off the ground, against gravity.
     /// </summary>
     private float springForce;
 
@@ -49,7 +57,7 @@ public class Wheel : MonoBehaviour
     private float springVelocity;
 
     /// <summary>
-    /// The force that counteracts springForce to prevent the car from bouncing uncontrollably.
+    /// The force that counteracts springForce to prevent the vehicle from bouncing uncontrollably.
     /// </summary>
     private float damperForce;
 
@@ -59,8 +67,29 @@ public class Wheel : MonoBehaviour
     private Vector3 suspensionForce;
 
     [Header("Wheel")]
+    [Tooltip("The position of this wheel on the vehicle.")]
+    [SerializeField] private WheelPosition wheelPos;
+
     [Tooltip("The radius of the wheel.")]
     [SerializeField] private float wheelRadius;
+
+    [Tooltip("Time it takes to lerp between wheelAngle and steerAngle.")]
+    [SerializeField] private float steerTime;
+
+    /// <summary>
+    /// Gets the position of this wheel on the vehicle.
+    /// </summary>
+    public WheelPosition WheelPos { get { return wheelPos; } }
+
+    /// <summary>
+    /// The angle at which this wheel is currently steering, in degrees.
+    /// </summary>
+    public float SteerAngle { get; set; }
+
+    /// <summary>
+    /// Tracks the current steering angle of this wheel.
+    /// </summary>
+    private float wheelAngle;
 
     // Start is called before the first frame update
     void Start()
@@ -71,9 +100,29 @@ public class Wheel : MonoBehaviour
     }
 
     // Update is called once per frame
+    // Perform non-physics calculations here.
+    void Update()
+    {
+        // Address snapping issue caused by steering in one direction before 
+        // quickly steering in the opposite direction.
+        // Use Lerp() to smoothly rotate between wheelAngle and SteerAngle.
+        wheelAngle = Mathf.Lerp(wheelAngle, SteerAngle, steerTime * Time.deltaTime);
+
+        // Rotate the wheel along the y-axis the number of degrees specified 
+        // by wheelAngle. Pass in wheelAngle instead of SteerAngle because 
+        // wheelAngle contains the snapping-corrected value as obtained from
+        // the call to Lerp() above.
+        // This can also be written transform.localRotation = Quaternion.Euler(Vector3.up * wheelAngle);
+        transform.localRotation = Quaternion.Euler(
+            transform.localRotation.x, 
+            transform.localRotation.y + wheelAngle, 
+            transform.localRotation.z);
+    }
+
+    // Perform physics calculations here.
     void FixedUpdate()
     {
-        // Calculate suspension physics when the car is on the ground.
+        // Calculate suspension physics when the vehicle is on the ground.
         if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, maxLength + wheelRadius))
         {
             // Store the length of the spring during the previous frame.
@@ -98,7 +147,7 @@ public class Wheel : MonoBehaviour
             // Add spring and damper forces together to obtain a resultant force
             // for the spring this frame.
             // The raycast is pointing downwards, but the resultant force acts
-            // upwards to push the car off the ground. Hence, multiply 
+            // upwards to push the vehicle off the ground. Hence, multiply 
             // springForce by transform.up to ensure the force points upwards.
             suspensionForce = (springForce + damperForce) * transform.up;
 
@@ -107,13 +156,13 @@ public class Wheel : MonoBehaviour
             // force at the centre of gravity of the vehicle.
             // The force should instead be applied where the wheel is.
             // Recall that this script is applied on a per-wheel basis, and so
-            // for a regular car it runs for a total of four wheels. The 
+            // for a regular vehicle it runs for a total of four wheels. The 
             // following line of code achieves this effect for THIS wheel, by
             // applying suspensionForce at hit.point (the location which the 
             // raycast hits the ground).
             vehicleRb.AddForceAtPosition(suspensionForce, hit.point);
         }
-        // Otherwise, the car is airborne. Max out suspension length.
+        // Otherwise, the vehicle is airborne. Max out suspension length.
         else
             currSpringLength = maxLength;
     }
