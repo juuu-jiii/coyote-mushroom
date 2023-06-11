@@ -47,13 +47,17 @@ public class VehicleController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         steerInput = Input.GetAxis("Horizontal");
+
+        // ======================================================================================
+        // ============================= STEERING CALCULATIONS ==================================
+        // ======================================================================================
 
         // Perform Ackermann angle steering calculations for both front wheels separately.
         // Handle the cases where the vehicle is steering right, steering left, and not steering at all.

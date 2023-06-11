@@ -91,6 +91,21 @@ public class Wheel : MonoBehaviour
     /// </summary>
     private float wheelAngle;
 
+    /// <summary>
+    /// The velocity of this wheel, expressed in terms of its local space.
+    /// </summary>
+    private Vector3 localWheelVelocity;
+
+    /// <summary>
+    /// The longitudinal (forward) force applied to this wheel.
+    /// </summary>
+    private float fZ;
+
+    /// <summary>
+    /// The lateral (sideways) force applied to this wheel.
+    /// </summary>
+    private float fX;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -117,6 +132,24 @@ public class Wheel : MonoBehaviour
             transform.localRotation.x, 
             transform.localRotation.y + wheelAngle, 
             transform.localRotation.z);
+
+        // Visualise the suspension length and wheel radius by drawing rays.
+        // The ray from DrawRay() is drawn from start to start + dir in world coordinates.
+
+        // Suspension length
+        Debug.DrawRay(
+            transform.position, 
+            -transform.up * currSpringLength, 
+            Color.green);
+        
+        // Wheel radius
+        Debug.DrawRay(
+            transform.position + (-transform.up * currSpringLength), 
+            -transform.up * wheelRadius, 
+            Color.magenta);
+
+        // Alternatively, to make the ray reach the ground in one call to DrawRay():
+        // Debug.DrawRay(transform.position, -transform.up * (currSpringLength + wheelRadius), Color.green);
     }
 
     // Perform physics calculations here.
@@ -125,6 +158,9 @@ public class Wheel : MonoBehaviour
         // Calculate suspension physics when the vehicle is on the ground.
         if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, maxLength + wheelRadius))
         {
+            // ======================================================================================
+            // ============================ SUSPENSION CALCULATIONS =================================
+            // ======================================================================================
             // Store the length of the spring during the previous frame.
             prevSpringLength = currSpringLength;
 
@@ -151,6 +187,30 @@ public class Wheel : MonoBehaviour
             // springForce by transform.up to ensure the force points upwards.
             suspensionForce = (springForce + damperForce) * transform.up;
 
+            // ======================================================================================
+            // ==================== LATERAL/LONGITUDINAL FORCE CALCULATIONS =========================
+            // ======================================================================================
+
+            // Get the velocity of the vehicle's rigid body at the point where 
+            // the raycast hits the ground (i.e., the bottom of the wheel).
+            // Rigidbody.GetPointVelocity() returns a value in world space, so 
+            // wrap that result in a Transform.InverseTransformDirection() to 
+            // transform it to the local space of this wheel.
+            localWheelVelocity = transform.InverseTransformDirection(vehicleRb.GetPointVelocity(hit.point));
+
+            // Perform calculations for the forward and sideways forces acting 
+            // on this wheel.
+            // fZ is simplified for now just to provide a "proof-of-concept" so
+            // the car can be driven. Moving forward grip will need to be 
+            // accounted for, and so localWheelVelocity.z and a grip curve will have to come into the picture.
+            // Not sure why we need to multiply by springForce, though. I think it's to ensure the spring's forces (as they change) are also taken into account when moving.
+            // We need to invert on the right axis since that's the direction in which we're actually going to turn
+            // Very, very valet explains that we don't have to just invert, we can invert and multiply by a value between 0 and 1 to create the impression grip --> curves
+            // Right now, the handling feels off. The wheels turn the same way regardless of the car's speed. And turning when slow isn't good either.
+            //      You need to make it so the car steers better at lower speeds. Either directly tie the steer angle to the speed, or do it by manipulating grip based on speed.
+            fZ = Input.GetAxis("Vertical") * springForce;
+            fX = localWheelVelocity.x * springForce;
+
             // Add the force calculated above to the rigidbody.
             // vehicleRb.AddForce(suspensionForce) is incorrect - it applies a 
             // force at the centre of gravity of the vehicle.
@@ -160,7 +220,9 @@ public class Wheel : MonoBehaviour
             // following line of code achieves this effect for THIS wheel, by
             // applying suspensionForce at hit.point (the location which the 
             // raycast hits the ground).
-            vehicleRb.AddForceAtPosition(suspensionForce, hit.point);
+            vehicleRb.AddForceAtPosition(
+                suspensionForce + fZ * transform.forward + fX * (-transform.right), 
+                hit.point);
         }
         // Otherwise, the vehicle is airborne. Max out suspension length.
         else
