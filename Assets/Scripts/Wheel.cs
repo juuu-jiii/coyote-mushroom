@@ -70,11 +70,14 @@ public class Wheel : MonoBehaviour
     [Tooltip("The position of this wheel on the vehicle.")]
     [SerializeField] private WheelPosition wheelPos;
 
-    [Tooltip("The radius of the wheel.")]
+    [Tooltip("The radius of the wheel (in m).")]
     [SerializeField] private float wheelRadius;
 
     [Tooltip("Time it takes to lerp between wheelAngle and steerAngle. The higher this value is, the faster the lerping between the two angles, and vice versa.")]
     [SerializeField] private float steerTime;
+
+    [Tooltip("The GameObject containing the mesh for this wheel.")]
+    [SerializeField] private GameObject wheelMesh;
 
     /// <summary>
     /// Gets the position of this wheel on the vehicle.
@@ -92,9 +95,19 @@ public class Wheel : MonoBehaviour
     private float wheelAngle;
 
     /// <summary>
-    /// The velocity of this wheel, expressed in terms of its local space.
+    /// The linear velocity (m/s) of this wheel, expressed in terms of its local space.
     /// </summary>
-    private Vector3 localWheelVelocity;
+    private Vector3 localLinearVelocity;
+
+    /// <summary>
+    /// The angular velocity (rad/s) of this wheel, expressed in terms of its local space.
+    /// </summary>
+    private float localAngularVelocity;
+
+    /// <summary>
+    /// The delta by which to rotate this wheel (degrees) during the current frame.
+    /// </summary>
+    private float localDeltaWheelRotation;
 
     /// <summary>
     /// The longitudinal (forward) force applied to this wheel.
@@ -133,23 +146,59 @@ public class Wheel : MonoBehaviour
             transform.localRotation.y + wheelAngle, 
             transform.localRotation.z);
 
+        // Update the wheel mesh's position based on the length of the suspension.
+        // The value of y increases as we go upwards, and decreases as we go downwards.
+        // This is why we need to negate currSpringLength to ensure the wheels do not
+        // end up on top of the car's chassis instead of below.
+        // Additionally, since the wheel mesh is a child of the GameObject this
+        // script is attached to, animating their rotation as the car steers is
+        // automatically handled.
+        wheelMesh.transform.localPosition = new Vector3(
+            wheelMesh.transform.localPosition.x,
+            -currSpringLength,
+            wheelMesh.transform.localPosition.z);
+
+        #region Visualising suspension length and wheel radius by drawing rays
         // Visualise the suspension length and wheel radius by drawing rays.
         // The ray from DrawRay() is drawn from start to start + dir in world coordinates.
 
-        // Suspension length
-        Debug.DrawRay(
-            transform.position, 
-            -transform.up * currSpringLength, 
-            Color.green);
+        // // Suspension length
+        // Debug.DrawRay(
+        //     transform.position, 
+        //     -transform.up * currSpringLength, 
+        //     Color.green);
         
-        // Wheel radius
-        Debug.DrawRay(
-            transform.position + (-transform.up * currSpringLength), 
-            -transform.up * wheelRadius, 
-            Color.magenta);
+        // // Wheel radius
+        // Debug.DrawRay(
+        //     transform.position + (-transform.up * currSpringLength), 
+        //     -transform.up * wheelRadius, 
+        //     Color.magenta);
 
         // Alternatively, to make the ray reach the ground in one call to DrawRay():
         // Debug.DrawRay(transform.position, -transform.up * (currSpringLength + wheelRadius), Color.green);
+        #endregion;
+
+        // Calculate the wheel's local angular velocity.
+        localAngularVelocity = localLinearVelocity.z / wheelRadius;
+        localDeltaWheelRotation = localAngularVelocity * Time.deltaTime * Mathf.Rad2Deg;
+
+        // Add the calculated rotation to the local transform of wheelMesh
+        // i.e., rotate the wheel!
+        wheelMesh.transform.Rotate(
+            new Vector3(
+                localDeltaWheelRotation,    // pitch
+                0f,                         // yaw
+                0f),                        // roll
+            Space.Self);                    // apply to local coordinate space
+
+        // // This can also be done by setting the local rotation of wheelMesh to 
+        // // a quaternion. An accumulator variable needs to be used to prevent the 
+        // // same quaternion from being created every iteration. For example:
+        // currRotationAccumulator += wheelMesh.transform.localRotation.x + localDeltaWheelRotation;
+        // wheelMesh.transform.localRotation = Quaternion.Euler(
+        //     currRotationAccumulator, // pitch
+        //     wheelMesh.transform.localRotation.y, // yaw
+        //     wheelMesh.transform.localRotation.z); // roll
     }
 
     // Perform physics calculations here.
@@ -196,7 +245,7 @@ public class Wheel : MonoBehaviour
             // Rigidbody.GetPointVelocity() returns a value in world space, so 
             // wrap that result in a Transform.InverseTransformDirection() to 
             // transform it to the local space of this wheel.
-            localWheelVelocity = transform.InverseTransformDirection(vehicleRb.GetPointVelocity(hit.point));
+            localLinearVelocity = transform.InverseTransformDirection(vehicleRb.GetPointVelocity(hit.point));
 
             // Perform calculations for the forward and sideways forces acting 
             // on this wheel.
@@ -209,7 +258,7 @@ public class Wheel : MonoBehaviour
             // Right now, the handling feels off. The wheels turn the same way regardless of the car's speed. And turning when slow isn't good either.
             //      You need to make it so the car steers better at lower speeds. Either directly tie the steer angle to the speed, or do it by manipulating grip based on speed.
             fZ = Input.GetAxis("Vertical") * springForce;
-            fX = localWheelVelocity.x * springForce;
+            fX = localLinearVelocity.x * springForce;
 
             // Add the force calculated above to the rigidbody.
             // vehicleRb.AddForce(suspensionForce) is incorrect - it applies a 
