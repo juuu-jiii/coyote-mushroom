@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Defines the possible wheel locations in a 4-wheel vehicle.
+/// </summary>
 public enum WheelPosition
 {
     FrontLeft,
@@ -10,6 +11,9 @@ public enum WheelPosition
     RearRight
 }
 
+/// <summary>
+/// This is where logic determining wheel and suspension behaviour is written.
+/// </summary>
 public class Wheel : MonoBehaviour
 {
     [Header("Rigidbody")]

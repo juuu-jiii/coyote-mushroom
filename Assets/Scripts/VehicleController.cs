@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -10,7 +8,6 @@ using UnityEngine;
 /// - torque curve of the engine
 /// - etc.
 /// </summary>
-
 public class VehicleController : MonoBehaviour
 {
     /*
