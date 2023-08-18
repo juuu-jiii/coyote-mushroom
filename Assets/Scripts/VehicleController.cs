@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 /// <summary>
@@ -20,11 +21,36 @@ public class VehicleController : MonoBehaviour
     [Tooltip("Array tracking all wheels of this vehicle.")]
     [SerializeField] private Wheel[] wheels;
 
+    [Tooltip("The GameObject referencing the body geometry of the vehicle.")]
+    [SerializeField] private GameObject body;
+
     [Header("Vehicle Specs")]
     [SerializeField] private float wheelBase; // in m
     [SerializeField] private float rearTrack; // in m
     [Tooltip("The minimum dimension of available space required for the vehicle to make a semi-circular U-turn without skidding, in metres. Also known as a turning circle.")]
     [SerializeField] private float turningRadius;
+
+    /// <summary>
+    /// Serves as an encapsulation container for the wheels array.
+    /// Prefer ReadOnlyCollection<T> over IEnumerable<T> as the former has 
+    /// readonly indexing, whereas the latter does not have indexing at all.
+    /// https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlycollection-1?view=net-7.0
+    /// </summary>
+    private ReadOnlyCollection<Wheel> readonlyWheels;
+
+    /// <summary>
+    /// Public getter for readonlyWheels.
+    /// </summary>
+    public ReadOnlyCollection<Wheel> Wheels
+    {
+        get
+        {
+            if (readonlyWheels == null)
+                readonlyWheels = new ReadOnlyCollection<Wheel>(wheels);
+
+            return readonlyWheels;
+        }
+    }
 
     /// <summary>
     /// Input from the player controller.
@@ -41,6 +67,17 @@ public class VehicleController : MonoBehaviour
     /// </summary>
     private float ackermannAngleRight;
 
+    /// <summary>
+    /// Whether to show the vehicle's body.
+    /// </summary>
+    private bool isBodyRendered = true;
+
+    private void RenderBody()
+    {
+        if (isBodyRendered = !isBodyRendered) body.SetActive(true);
+        else body.SetActive(false);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,6 +87,8 @@ public class VehicleController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Backspace)) RenderBody();
+
         steerInput = Input.GetAxis("Horizontal");
 
         // ======================================================================================

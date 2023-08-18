@@ -31,6 +31,26 @@ public class Wheel : MonoBehaviour
     [SerializeField] private float damperStiffness;
 
     /// <summary>
+    /// Public getter for restLength.
+    /// </summary>
+    public float RestLength { get { return restLength; } }
+
+    /// <summary>
+    /// Public getter for springTravel.
+    /// </summary>
+    public float SpringTravel { get { return springTravel; } }
+
+    /// <summary>
+    /// Public getter for springStiffness.
+    /// </summary>
+    public float SpringStiffness { get { return springStiffness; } }
+
+    /// <summary>
+    /// Public getter for damperStiffness.
+    /// </summary>
+    public float DamperStiffness { get { return damperStiffness; } }
+
+    /// <summary>
     /// Minimum length of the spring. Used alongside maxLength to clamp springLength.
     /// </summary>
     private float minLength;
@@ -48,27 +68,27 @@ public class Wheel : MonoBehaviour
     /// <summary>
     /// The length of the spring during the current frame.
     /// </summary>
-    public float currSpringLength;
+    public float CurrSpringLength { get; private set; }
 
     /// <summary>
     /// The upward force that is generated to push the vehicle off the ground, against gravity.
     /// </summary>
-    private float springForce;
+    public float SpringForce { get; private set; }
 
     /// <summary>
     /// Change in spring length over this frame and the last.
     /// </summary>
-    private float springVelocity;
+    public float SpringVelocity { get; private set; }
 
     /// <summary>
     /// The force that counteracts springForce to prevent the vehicle from bouncing uncontrollably.
     /// </summary>
-    private float damperForce;
+    public float DamperForce { get; private set; }
 
     /// <summary>
     /// The resultant force that pushes the vehicle up, above the ground.
     /// </summary>
-    private Vector3 suspensionForce;
+    public Vector3 SuspensionForce { get; private set; }
 
     [Header("Wheel")]
     [Tooltip("The position of this wheel on the vehicle.")]
@@ -146,8 +166,8 @@ public class Wheel : MonoBehaviour
         // the call to Lerp() above.
         // This can also be written transform.localRotation = Quaternion.Euler(Vector3.up * wheelAngle);
         transform.localRotation = Quaternion.Euler(
-            transform.localRotation.x, 
-            transform.localRotation.y + wheelAngle, 
+            transform.localRotation.x,
+            transform.localRotation.y + wheelAngle,
             transform.localRotation.z);
 
         // Update the wheel mesh's position based on the length of the suspension.
@@ -159,7 +179,7 @@ public class Wheel : MonoBehaviour
         // automatically handled.
         wheelMesh.transform.localPosition = new Vector3(
             wheelMesh.transform.localPosition.x,
-            -currSpringLength,
+            -CurrSpringLength,
             wheelMesh.transform.localPosition.z);
 
         #region Visualising suspension length and wheel radius by drawing rays
@@ -168,14 +188,14 @@ public class Wheel : MonoBehaviour
 
         // // Suspension length
         // Debug.DrawRay(
-        //     transform.position, 
-        //     -transform.up * currSpringLength, 
+        //     transform.position,
+        //     -transform.up * CurrSpringLength,
         //     Color.green);
-        
+
         // // Wheel radius
         // Debug.DrawRay(
-        //     transform.position + (-transform.up * currSpringLength), 
-        //     -transform.up * wheelRadius, 
+        //     transform.position + (-transform.up * CurrSpringLength),
+        //     -transform.up * wheelRadius,
         //     Color.magenta);
 
         // Alternatively, to make the ray reach the ground in one call to DrawRay():
@@ -215,30 +235,30 @@ public class Wheel : MonoBehaviour
             // ============================ SUSPENSION CALCULATIONS =================================
             // ======================================================================================
             // Store the length of the spring during the previous frame.
-            prevSpringLength = currSpringLength;
+            prevSpringLength = CurrSpringLength;
 
             // wheelRadius is a constant that has been set in the Inspector.
             // hit.distance = hit.point - raycast origin
-            currSpringLength = hit.distance - wheelRadius;
+            CurrSpringLength = hit.distance - wheelRadius;
 
             // Do not let the spring length exceed minLength or maxLength.
-            currSpringLength = Mathf.Clamp(currSpringLength, minLength, maxLength);
+            CurrSpringLength = Mathf.Clamp(CurrSpringLength, minLength, maxLength);
 
             // Measure the change in the spring's length over a fixed duration. 
             // In this case, the duration is the time between this frame and the last.
             // Use fixedDeltaTime since physics calculations are taking place in FixedUpdate.
-            springVelocity = (prevSpringLength - currSpringLength) / Time.fixedDeltaTime;
+            SpringVelocity = (prevSpringLength - CurrSpringLength) / Time.fixedDeltaTime;
 
             // Apply formulae to calculate spring and damper forces.
-            springForce = springStiffness * (restLength - currSpringLength);
-            damperForce = damperStiffness * springVelocity;
+            SpringForce = springStiffness * (restLength - CurrSpringLength);
+            DamperForce = damperStiffness * SpringVelocity;
 
             // Add spring and damper forces together to obtain a resultant force
             // for the spring this frame.
             // The raycast is pointing downwards, but the resultant force acts
             // upwards to push the vehicle off the ground. Hence, multiply 
             // springForce by transform.up to ensure the force points upwards.
-            suspensionForce = (springForce + damperForce) * transform.up;
+            SuspensionForce = (SpringForce + DamperForce) * transform.up;
 
             // ======================================================================================
             // ==================== LATERAL/LONGITUDINAL FORCE CALCULATIONS =========================
@@ -261,8 +281,8 @@ public class Wheel : MonoBehaviour
             // Very, very valet explains that we don't have to just invert, we can invert and multiply by a value between 0 and 1 to create the impression grip --> curves
             // Right now, the handling feels off. The wheels turn the same way regardless of the car's speed. And turning when slow isn't good either.
             //      You need to make it so the car steers better at lower speeds. Either directly tie the steer angle to the speed, or do it by manipulating grip based on speed.
-            fZ = Input.GetAxis("Vertical") * springForce;
-            fX = localLinearVelocity.x * springForce;
+            fZ = Input.GetAxis("Vertical") * SpringForce;
+            fX = localLinearVelocity.x * SpringForce;
 
             // Add the force calculated above to the rigidbody.
             // vehicleRb.AddForce(suspensionForce) is incorrect - it applies a 
@@ -274,11 +294,11 @@ public class Wheel : MonoBehaviour
             // applying suspensionForce at hit.point (the location which the 
             // raycast hits the ground).
             vehicleRb.AddForceAtPosition(
-                suspensionForce + fZ * transform.forward + fX * (-transform.right), 
+                SuspensionForce + fZ * transform.forward + fX * (-transform.right),
                 hit.point);
         }
         // Otherwise, the vehicle is airborne. Max out suspension length.
         else
-            currSpringLength = maxLength;
+            CurrSpringLength = maxLength;
     }
 }
