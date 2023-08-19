@@ -21,6 +21,12 @@ public class VehicleController : MonoBehaviour
     [Tooltip("Array tracking all wheels (scripts) of this vehicle.")]
     [SerializeField] private Wheel[] wheels;
 
+    [Header("Centre of Mass")]
+    [Tooltip("The Rigidbody component of the vehicle GameObject.")]
+    [SerializeField] private Rigidbody vehicleRb;
+    [Tooltip("The amount by which to adjust the centre of mass automatically computed for the vehicle's rigid body.")]
+    [SerializeField] private Vector3 centreOfMass;
+
     [Header("Debugging")]
     [Tooltip("The GameObject referencing the body geometry of the vehicle.")]
     [SerializeField] private GameObject body;
@@ -139,6 +145,8 @@ public class VehicleController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        vehicleRb.centerOfMass = centreOfMass;
+
         for (int i = 0; i < wheels.Length; i++)
         {
             // Get child transform of each wheel script i.e., get transform of 
