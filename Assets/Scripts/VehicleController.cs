@@ -18,11 +18,14 @@ public class VehicleController : MonoBehaviour
     * The results of these calculations then get passed to the Wheel scripts.
     */
 
-    [Tooltip("Array tracking all wheels of this vehicle.")]
+    [Tooltip("Array tracking all wheels (scripts) of this vehicle.")]
     [SerializeField] private Wheel[] wheels;
 
+    [Header("Debugging")]
     [Tooltip("The GameObject referencing the body geometry of the vehicle.")]
     [SerializeField] private GameObject body;
+    [Tooltip("The amount by which to scale down forces acting on the wheel when visualising them.")]
+    [SerializeField] private float forceScale;
 
     [Header("Vehicle Specs")]
     [SerializeField] private float wheelBase; // in m
@@ -68,17 +71,80 @@ public class VehicleController : MonoBehaviour
     private float ackermannAngleRight;
 
     /// <summary>
+    /// Whether to draw forces acting on the vehicle.
     /// </summary>
+    private bool areForcesRendered = false;
 
+    /// <summary>
+    /// Tracks all transforms of the vehicle's wheels.
+    /// </summary>
+    private Transform[] wheelTransforms = new Transform[4];
+
+    /// <summary>
+    /// Draws forces acting on the vehicle.
+    /// </summary>
+    private void RenderForces()
     {
-        if (isBodyRendered = !isBodyRendered) body.SetActive(true);
-        else body.SetActive(false);
+        // Loop through collection of all wheel gameObjects. For each, get its transform.position in world space
+        // Inner loop: three iterations, 
+        // O get the right/upward/forward forces (Vec3's) in object space
+        // O get the wheel script for each wheel gameObject
+        // O multiply each right/upward/forward vector (which are of unit length) by the corresponding x/y/z forces stored in the wheel scripts
+        //      - before that though, divide the x/y/z forces by a constant (35?) because they might be too large -- check logs to see
+        // O use different colours for each of the axes (rgb)
+        // - Get wheel component's transform.position in world space + right/up/fwd * x/y/z (which has been divided)
+        // Debug.DrawLine/Handles.DrawLine
+
+        // Vectors for visually displaying (scaled) forces acting on this wheel.
+        Vector3 scaledRight;
+        Vector3 scaledUp;
+        Vector3 scaledForward;
+        float scaledFX;
+        float scaledFY;
+        float scaledFZ;
+
+        for (int i = 0; i < wheels.Length; i++)
+        {
+            // Scale fX/Y/Z down for representation purposes when debugging.
+            scaledFX = wheels[i].fX / forceScale;
+            scaledFY = wheels[i].fY / forceScale;
+            scaledFZ = wheels[i].fZ / forceScale;
+
+            // Get the right/upward/forward (unit) vectors of each wheel.
+            // We could multiply them with fX/Y/Z directly, but their raw values
+            // are so large that they would be useless for debugging purposes if
+            // drawn.
+            //
+            // Instead, multiply each with their scaled values computed above.
+            scaledRight = wheels[i].transform.right * scaledFX;
+            scaledUp = wheels[i].transform.up * scaledFY;
+            scaledForward = wheels[i].transform.forward * scaledFZ;
+
+            // Draw the forces acting on each of the three (local) cardinal axes.
+            Debug.DrawLine(
+                wheelTransforms[i].transform.position,
+                wheelTransforms[i].transform.position + scaledRight,
+                Color.red);
+            Debug.DrawLine(
+                wheelTransforms[i].transform.position,
+                wheelTransforms[i].transform.position + scaledUp,
+                Color.green);
+            Debug.DrawLine(
+                wheelTransforms[i].transform.position,
+                wheelTransforms[i].transform.position + scaledForward,
+                Color.blue);
+        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        for (int i = 0; i < wheels.Length; i++)
+        {
+            // Get child transform of each wheel script i.e., get transform of 
+            // the wheel GameObject.
+            wheelTransforms[i] = wheels[i].transform.GetChild(0);
+        }
     }
 
     // Update is called once per frame
@@ -86,6 +152,9 @@ public class VehicleController : MonoBehaviour
     {
         // Render the vehicle's body.
         if (Input.GetKeyDown(KeyCode.Backspace)) body.SetActive(!body.activeInHierarchy);
+        if (Input.GetKeyDown(KeyCode.Tab)) areForcesRendered = !areForcesRendered;
+
+        if (areForcesRendered) RenderForces();
 
         steerInput = Input.GetAxis("Horizontal");
 
