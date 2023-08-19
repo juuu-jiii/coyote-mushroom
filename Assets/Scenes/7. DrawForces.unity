@@ -1125,6 +1125,11 @@ MonoBehaviour:
   - {fileID: 1732856211}
   - {fileID: 172892415}
   - {fileID: 1833048566}
+  wheelGOTransform:
+  - {fileID: 5112897772843345153}
+  - {fileID: 2134058745331262860}
+  - {fileID: 6649327749336978351}
+  - {fileID: 1927027222848187220}
   body: {fileID: 1558319720}
   wheelBase: 2.55
   rearTrack: 1.525
