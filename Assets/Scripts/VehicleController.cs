@@ -68,11 +68,8 @@ public class VehicleController : MonoBehaviour
     private float ackermannAngleRight;
 
     /// <summary>
-    /// Whether to show the vehicle's body.
     /// </summary>
-    private bool isBodyRendered = true;
 
-    private void RenderBody()
     {
         if (isBodyRendered = !isBodyRendered) body.SetActive(true);
         else body.SetActive(false);
@@ -87,7 +84,8 @@ public class VehicleController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Backspace)) RenderBody();
+        // Render the vehicle's body.
+        if (Input.GetKeyDown(KeyCode.Backspace)) body.SetActive(!body.activeInHierarchy);
 
         steerInput = Input.GetAxis("Horizontal");
 
