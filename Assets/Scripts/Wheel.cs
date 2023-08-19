@@ -287,11 +287,46 @@ public class Wheel : MonoBehaviour
             // Very, very valet explains that we don't have to just invert, we can invert and multiply by a value between 0 and 1 to create the impression grip --> curves
             // Right now, the handling feels off. The wheels turn the same way regardless of the car's speed. And turning when slow isn't good either.
             //      You need to make it so the car steers better at lower speeds. Either directly tie the steer angle to the speed, or do it by manipulating grip based on speed.
-            fZ = Input.GetAxis("Vertical") * SpringForce;
-            fX = localLinearVelocity.x * SpringForce;
+            fZ = Input.GetAxis("Vertical") * SpringForce * 0.5f;
+
+            // The following line is incorrect -- x forces are never clamped to
+            // [-fY, fY]. They can therefore exceed spring + damper force, which
+            // is not possible.
+            // This means you get exceptional grip, and when max turn angle is
+            // reached, extreme negative values can be obtained.
+            // fX = localLinearVelocity.x * SpringForce * (-1);
+
+            // The following line is the correct way to implement the previous
+            // (incorrect) example. By clamping the value of fX, we obtain more
+            // "realistic" vehicle handling.
+            //
+            // The x-component of the vector is the direction in which the wheel
+            // "doesn't like" to slide. We therefore need a force that prevents 
+            // the wheel from sliding in that direction. This force is friction,
+            // and can be obtained by simply negating the force in the
+            // x-direction, since we don't want any of that velocity to exist in
+            // order to avoid sliding sideways.
+            //
+            // From the equation for calculating friction force:
+            // - The negation (multiplying by -1) acts as the friction coefficient.
+            //   We are saying "apply 100% friction in the opposite direction of
+            //   the x-component."
+            // - SpringForce == N
+            // - localLinearVelocity.x == slip
+            // Note we are assuming full friction force in this current example.
+            //
+            // If we wanted, we could adjust this "negation"; multiplying by a 
+            // value -1 < x < 0 removes (100 - 100x)% of the velocity in the
+            // direction of the x-component, and can be used to model a loss
+            // of grip due to varying surfaces, tire wear, breaking traction, 
+            // etc.
+            //
+            // Note that we take SpringForce and not fY 
+            // (which is SpringForce + DamperForce) here.
+            fX = Mathf.Clamp(SpringForce * localLinearVelocity.x * (-1), -fY, fY);
 
             // Add the force calculated above to the rigidbody.
-            // vehicleRb.AddForce(suspensionForce) is incorrect - it applies a 
+            // vehicleRb.AddForce(force) is incorrect - it applies a 
             // force at the centre of gravity of the vehicle.
             // The force should instead be applied where the wheel is.
             // Recall that this script is applied on a per-wheel basis, and so
@@ -300,7 +335,7 @@ public class Wheel : MonoBehaviour
             // applying suspensionForce at hit.point (the location which the 
             // raycast hits the ground).
             vehicleRb.AddForceAtPosition(
-                SuspensionForce + fZ * transform.forward + fX * (-transform.right),
+                SuspensionForce + fZ * transform.forward + fX * transform.right,
                 hit.point);
         }
         // Otherwise, the vehicle is airborne. Max out suspension length.
