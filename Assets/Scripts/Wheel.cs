@@ -136,12 +136,17 @@ public class Wheel : MonoBehaviour
     /// <summary>
     /// The longitudinal (forward) force applied to this wheel.
     /// </summary>
-    private float fZ;
+    public float fZ;
+
+    /// <summary>
+    /// The upward force applied to this wheel.
+    /// </summary>
+    public float fY;
 
     /// <summary>
     /// The lateral (sideways) force applied to this wheel.
     /// </summary>
-    private float fX;
+    public float fX;
 
     // Start is called before the first frame update
     void Start()
@@ -252,13 +257,14 @@ public class Wheel : MonoBehaviour
             // Apply formulae to calculate spring and damper forces.
             SpringForce = springStiffness * (restLength - CurrSpringLength);
             DamperForce = damperStiffness * SpringVelocity;
+            fY = SpringForce + DamperForce;
 
             // Add spring and damper forces together to obtain a resultant force
             // for the spring this frame.
             // The raycast is pointing downwards, but the resultant force acts
             // upwards to push the vehicle off the ground. Hence, multiply 
             // springForce by transform.up to ensure the force points upwards.
-            SuspensionForce = (SpringForce + DamperForce) * transform.up;
+            SuspensionForce = fY * transform.up;
 
             // ======================================================================================
             // ==================== LATERAL/LONGITUDINAL FORCE CALCULATIONS =========================

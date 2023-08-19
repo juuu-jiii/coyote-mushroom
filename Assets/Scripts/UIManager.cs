@@ -42,6 +42,7 @@ public class UIManager : MonoBehaviour
     // - springVelocity -
     // - damperForce -
     // - suspensionForce -
+    // - fX/Y/Z
 
     // Get the array of wheels from vehicleController
 
@@ -71,6 +72,9 @@ public class UIManager : MonoBehaviour
                 $"{wheel.WheelPos} springVelocity: {wheel.SpringVelocity}\n" +
                 $"{wheel.WheelPos} damperForce: {wheel.DamperForce}\n" +
                 $"{wheel.WheelPos} suspensionForce: {wheel.SuspensionForce}\n" +
+                $"{wheel.WheelPos} fX: {wheel.fX}\n" +
+                $"{wheel.WheelPos} fY: {wheel.fY}\n" +
+                $"{wheel.WheelPos} fZ: {wheel.fZ}\n" +
                 "\n";
         }
     }
