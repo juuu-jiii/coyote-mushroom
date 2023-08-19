@@ -29,6 +29,10 @@ public class Wheel : MonoBehaviour
     [SerializeField] private float springStiffness;
     [Tooltip("Stiffness of the damper. The higher the value, the larger the force acting in the direction opposite that of the spring force.")]
     [SerializeField] private float damperStiffness;
+    [Tooltip("Minimum possible value SpringForce can store.")]
+    [SerializeField] private float minForce;
+    [Tooltip("Maximum possible value SpringForce can store.")]
+    [SerializeField] private float maxForce;
 
     /// <summary>
     /// Public getter for restLength.
@@ -255,7 +259,7 @@ public class Wheel : MonoBehaviour
             SpringVelocity = (prevSpringLength - CurrSpringLength) / Time.fixedDeltaTime;
 
             // Apply formulae to calculate spring and damper forces.
-            SpringForce = springStiffness * (restLength - CurrSpringLength);
+            SpringForce = Mathf.Clamp(springStiffness * (restLength - CurrSpringLength), minForce, maxForce);
             DamperForce = damperStiffness * SpringVelocity;
             fY = SpringForce + DamperForce;
 
