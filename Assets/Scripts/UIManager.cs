@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI computedWheelData;
     [Tooltip("The TMPro text object to log computed values for the vehicle's current torque and RPM.")]
     [SerializeField] private TextMeshProUGUI torqueAndRpm;
-    [Toolti[("The slider used to visually represent the vehicle's current RPM.")]]
+    [Tooltip("The slider used to visually represent the vehicle's current RPM.")]
     [SerializeField] private Slider rpmSlider;
 
     [Header("Vehicle")]
