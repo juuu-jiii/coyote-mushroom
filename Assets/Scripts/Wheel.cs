@@ -294,7 +294,7 @@ public class Wheel : MonoBehaviour
             fZ = Input.GetAxis("Vertical") * SpringForce * 0.5f;
 
             // The following line is incorrect -- x forces are never clamped to
-            // [-fY, fY]. They can therefore exceed spring + damper force, which
+            // [-fY, +fY]. They can therefore exceed spring + damper force, which
             // is not possible.
             // This means you get exceptional grip, and when max turn angle is
             // reached, extreme negative values can be obtained.
@@ -344,6 +344,9 @@ public class Wheel : MonoBehaviour
         }
         // Otherwise, the vehicle is airborne. Max out suspension length.
         else
+        {
+            // fX = fZ = 0; can also just leave this out because it doesn't seem to make a difference?
             CurrSpringLength = maxLength;
+        }
     }
 }
