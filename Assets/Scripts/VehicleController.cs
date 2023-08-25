@@ -39,6 +39,8 @@ public class VehicleController : MonoBehaviour
     [Tooltip("The minimum dimension of available space required for the vehicle to make a semi-circular U-turn without skidding, in metres. Also known as a turning circle.")]
     [SerializeField] private float turningRadius;
 
+    [SerializeField] private Engine engine;
+
     /// <summary>
     /// Serves as an encapsulation container for the wheels array.
     /// Prefer ReadOnlyCollection<T> over IEnumerable<T> as the former has 
@@ -62,9 +64,14 @@ public class VehicleController : MonoBehaviour
     }
 
     /// <summary>
-    /// Input from the player controller.
+    /// Steering input from the player controller.
     /// </summary>
     private float steerInput;
+
+    /// <summary>
+    /// Throttle input from the player controller.
+    /// </summary>
+    private float throttleInput;
 
     /// <summary>
     /// Ackermann angle for the front right wheel.
@@ -165,6 +172,7 @@ public class VehicleController : MonoBehaviour
         if (areForcesRendered) RenderForces();
 
         steerInput = Input.GetAxis("Horizontal");
+        engine.ThrottleInput = Input.GetAxis("Vertical");
 
         // ======================================================================================
         // ============================= STEERING CALCULATIONS ==================================
