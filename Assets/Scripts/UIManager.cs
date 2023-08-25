@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -12,10 +13,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI consistentWheelData;
     [Tooltip("The TMPro text object to log computed values across all four wheels to on the canvas.")]
     [SerializeField] private TextMeshProUGUI computedWheelData;
+    [SerializeField] private TextMeshProUGUI torqueAndRpm;
+    [SerializeField] private Slider rpmSlider;
 
     [Header("Vehicle")]
     [Tooltip("The VehicleController GameObject associated with the vehicle whose data is to be logged to the screen.")]
     [SerializeField] private VehicleController vehicleController;
+
+    [SerializeField] private Engine engine;
 
     /// <summary>
     /// Reference to VehicleController.wheels as a readonly collection.
@@ -51,6 +56,9 @@ public class UIManager : MonoBehaviour
     {
         wheels = vehicleController.Wheels;
 
+        rpmSlider.minValue = engine.IdleRpm;
+        rpmSlider.maxValue = engine.MaxRpm;
+
         consistentWheelData.text =
             $"restLength: {wheels[0].RestLength}\n" +
             $"springTravel: {wheels[0].SpringTravel}\n" +
@@ -77,5 +85,11 @@ public class UIManager : MonoBehaviour
                 $"{wheel.WheelPos} fZ: {wheel.fZ}\n" +
                 "\n";
         }
+
+        torqueAndRpm.text =
+            $"Torque: {engine.CurrentTorque}\n" +
+            $"RPM: {engine.CurrentRpm}\n";
+
+        rpmSlider.value = engine.CurrentRpm;
     }
 }
