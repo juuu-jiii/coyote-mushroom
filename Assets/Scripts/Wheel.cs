@@ -291,7 +291,7 @@ public class Wheel : MonoBehaviour
             // Very, very valet explains that we don't have to just invert, we can invert and multiply by a value between 0 and 1 to create the impression grip --> curves
             // Right now, the handling feels off. The wheels turn the same way regardless of the car's speed. And turning when slow isn't good either.
             //      You need to make it so the car steers better at lower speeds. Either directly tie the steer angle to the speed, or do it by manipulating grip based on speed.
-            fZ = Input.GetAxis("Vertical") * SpringForce * 0.5f;
+            fZ = 0; // Input.GetAxis("Vertical") * SpringForce * 0.5f;
 
             // The following line is incorrect -- x forces are never clamped to
             // [-fY, +fY]. They can therefore exceed spring + damper force, which
