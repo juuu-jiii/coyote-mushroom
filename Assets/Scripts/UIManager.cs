@@ -13,13 +13,16 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI consistentWheelData;
     [Tooltip("The TMPro text object to log computed values across all four wheels to on the canvas.")]
     [SerializeField] private TextMeshProUGUI computedWheelData;
+    [Tooltip("The TMPro text object to log computed values for the vehicle's current torque and RPM.")]
     [SerializeField] private TextMeshProUGUI torqueAndRpm;
+    [Toolti[("The slider used to visually represent the vehicle's current RPM.")]]
     [SerializeField] private Slider rpmSlider;
 
     [Header("Vehicle")]
     [Tooltip("The VehicleController GameObject associated with the vehicle whose data is to be logged to the screen.")]
     [SerializeField] private VehicleController vehicleController;
 
+    [Tooltip("This vehicle's engine script.")]
     [SerializeField] private Engine engine;
 
     /// <summary>
