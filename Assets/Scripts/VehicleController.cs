@@ -20,6 +20,8 @@ public class VehicleController : MonoBehaviour
 
     [Tooltip("Array tracking all wheels (scripts) of this vehicle.")]
     [SerializeField] private Wheel[] wheels;
+    [Tooltip("This vehicle's engine script.")]
+    [SerializeField] private Engine engine;
 
     [Header("Centre of Mass")]
     [Tooltip("The Rigidbody component of the vehicle GameObject.")]
@@ -34,12 +36,12 @@ public class VehicleController : MonoBehaviour
     [SerializeField] private float forceScale;
 
     [Header("Vehicle Specs")]
+    [Tooltip("The distance between the front and rear wheels of this vehicle.")]
     [SerializeField] private float wheelBase; // in m
+    [Tooltip("The distance between this vehicle's rear wheels.")]
     [SerializeField] private float rearTrack; // in m
     [Tooltip("The minimum dimension of available space required for the vehicle to make a semi-circular U-turn without skidding, in metres. Also known as a turning circle.")]
     [SerializeField] private float turningRadius;
-
-    [SerializeField] private Engine engine;
 
     /// <summary>
     /// Serves as an encapsulation container for the wheels array.
@@ -171,6 +173,7 @@ public class VehicleController : MonoBehaviour
 
         if (areForcesRendered) RenderForces();
 
+        // Read player input.
         steerInput = Input.GetAxis("Horizontal");
         engine.ThrottleInput = Input.GetAxis("Vertical");
 
