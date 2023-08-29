@@ -309,9 +309,10 @@ MonoBehaviour:
   damperStiffness: 4000
   minForce: -2000
   maxForce: 6000
+  canSteer: 0
   wheelPos: 2
   wheelRadius: 0.33
-  steerTime: 8
+  steerRate: 75
   wheelMesh: {fileID: 4361129121696774252}
   fZ: 0
   fY: 0
@@ -1212,6 +1213,7 @@ MonoBehaviour:
   - {fileID: 1732856211}
   - {fileID: 172892415}
   - {fileID: 1833048566}
+  engine: {fileID: 791669402}
   vehicleRb: {fileID: 791669399}
   centreOfMass: {x: 0, y: 0.1, z: 0}
   body: {fileID: 1558319720}
@@ -1219,7 +1221,6 @@ MonoBehaviour:
   wheelBase: 2.55
   rearTrack: 1.525
   turningRadius: 10.8
-  engine: {fileID: 791669402}
 --- !u!114 &791669402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1971,9 +1972,10 @@ MonoBehaviour:
   damperStiffness: 4000
   minForce: -2000
   maxForce: 6000
+  canSteer: 1
   wheelPos: 1
   wheelRadius: 0.33
-  steerTime: 8
+  steerRate: 75
   wheelMesh: {fileID: 4881850289962981939}
   fZ: 0
   fY: 0
@@ -2127,9 +2129,10 @@ MonoBehaviour:
   damperStiffness: 4000
   minForce: -2000
   maxForce: 6000
+  canSteer: 0
   wheelPos: 3
   wheelRadius: 0.33
-  steerTime: 8
+  steerRate: 75
   wheelMesh: {fileID: 3712147440049665092}
   fZ: 0
   fY: 0
@@ -2629,9 +2632,10 @@ MonoBehaviour:
   damperStiffness: 4000
   minForce: -2000
   maxForce: 6000
+  canSteer: 1
   wheelPos: 0
   wheelRadius: 0.33
-  steerTime: 8
+  steerRate: 75
   wheelMesh: {fileID: 946327294627188043}
   fZ: 0
   fY: 0

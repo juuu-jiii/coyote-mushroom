@@ -95,14 +95,16 @@ public class Wheel : MonoBehaviour
     public Vector3 SuspensionForce { get; private set; }
 
     [Header("Wheel")]
+    [Tooltip("Whether this wheel can be steered.")]
+    [SerializeField] private bool canSteer;
     [Tooltip("The position of this wheel on the vehicle.")]
     [SerializeField] private WheelPosition wheelPos;
 
     [Tooltip("The radius of the wheel (in m).")]
     [SerializeField] private float wheelRadius;
 
-    [Tooltip("Time it takes to lerp between wheelAngle and steerAngle. The higher this value is, the faster the lerping between the two angles, and vice versa.")]
-    [SerializeField] private float steerTime;
+    [Tooltip("Rate at which to adjust wheelAngle such that it equals SteerAngle. The higher this value is, the quicker wheelAngle will equal SteerAngle.")]
+    [SerializeField] private float steerRate;
 
     [Tooltip("The GameObject containing the mesh for this wheel.")]
     [SerializeField] private GameObject wheelMesh;
@@ -167,7 +169,67 @@ public class Wheel : MonoBehaviour
         // Address snapping issue caused by steering in one direction before 
         // quickly steering in the opposite direction.
         // Use Lerp() to smoothly rotate between wheelAngle and SteerAngle.
-        wheelAngle = Mathf.Lerp(wheelAngle, SteerAngle, steerTime * Time.deltaTime);
+        // if (elapsedTime < steerTime) // * Time.deltaTime)
+        // {
+        //     Debug.Log("!=");
+        //     elapsedTime += Time.deltaTime;
+        //     float t = elapsedTime / steerTime; // * Time.deltaTime;
+        //     wheelAngle = Mathf.Lerp(wheelAngle, SteerAngle, t);
+
+        //     // Debug.Log("SteerAngle = " + SteerAngle);
+        //     // Debug.Log(t);
+        //     // float t = wheelAngle / SteerAngle;
+        // }
+        // else
+        // {
+        //     Debug.Log("==");
+        //     wheelAngle = SteerAngle;
+        //     elapsedTime = 0;
+        // }
+        // wheelAngle = Mathf.Lerp(wheelAngle, SteerAngle, steerTime * Time.deltaTime);
+        // float currentSteerTime = steerTime;
+
+        // if (canSteer && (Mathf.Sign(steerInput) != Mathf.Sign(wheelAngle)))
+        // {
+        //     // Debug.Log("wheelAngle = " + wheelAngle);
+        //     currentSteerTime *= 2;
+        // }
+
+        // Address snapping issue caused by steering in one direction before 
+        // quickly steering in the opposite direction.
+        //
+        // Use MoveTowards() to smoothly move wheelAngle (the current angle the
+        // wheels are pointing in) towards SteerAngle (the angle the wheels
+        // should be pointing in), using steerTime to adjust the rate at which
+        // this process occurs.
+        //
+        // Only apply the above logic if these wheels can steer.
+        //
+        // This is a simpler implementation than using lerp. Lerp requires us to
+        // keep track of the interpolation parameter 't', as well as the start
+        // and end values to interpolate between. With MoveTowards, we always move
+        // maxDelta towards any given position, removing the need to care about t.
+        // We also pass currentValue in at the first parameter instead of a start
+        // value, which is what lerp expects. This way, we always operate off the
+        // current position, removing the need to track the start value separately.
+        if (canSteer)
+        {
+            // In an implementation that handles axis input manually, we would
+            // probably want to further adjust steerTime based on whether the
+            // wheelAngle is already in the same direction as that of input
+            // (checking for the sign of input against rotation is one way to do
+            // this). If input is in one direction, but wheelAngle is in another,
+            // that implies the player was steering in one direction but has
+            // switched to another. We would need to increase steerTime 
+            // temporarily for faster response.
+            //
+            // Another implementation we'd need to include is to auto-correct
+            // steering to the centre if no steering input is received.
+            //
+            // See lines 249 - 265 in: 
+            // https://github.com/KatVHarris/GravityInfiniteRunner/blob/master/Unity/Assets/Sample%20Assets/Vehicles/Car/Scripts/CarController.cs
+            wheelAngle = Mathf.MoveTowards(wheelAngle, SteerAngle, steerRate * Time.deltaTime);
+        }
 
         // Rotate the wheel along the y-axis the number of degrees specified 
         // by wheelAngle. Pass in wheelAngle instead of SteerAngle because 
