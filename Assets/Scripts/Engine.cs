@@ -15,7 +15,7 @@ public class Engine : MonoBehaviour
     [SerializeField] private float maxRpm;
     [Tooltip("The engine's inertia. The smaller and lighter an engine, the lower the inertia. For passenger cars, engine inertia typically sits between 0.2 and 0.35.")]
     [SerializeField] private float inertia;
-    [Tooltip("???")] // TODO: fill this in
+    [Tooltip("The amount by which to reduce RPMs when neither the accelerator or the brake are pressed aka engine braking.")]
     [SerializeField] private float backTorque;
 
     /// <summary>
@@ -69,9 +69,21 @@ public class Engine : MonoBehaviour
     /// <returns>
     /// Approximation of engine RPM.
     /// </returns>
-    float CalculateRpmSimple() {
+    float CalculateRpmSimple()
+    {
+        // Evaluate how much RPM to add to/subtract from CurrentRpm based on
+        // ThrottleInput. Clamp the value so it never exceeds the range 
+        // [idleRpm, maxRpm].
         return Mathf.Clamp(
-            // TODO: find out how lerp works and how it applies to this implementation.
+            // ThrottleInput stores the output of Input.GetAxis("Vertical"), so
+            // it is within the range [-1, 1].
+            //
+            // Here, if ThrottleValue == 0.5, we get 
+            // -3000dt + (5000dt - (-3000dt)) * 0.5 = 1000dt
+            // and so we add 1000dt to CurrentRpm.
+            //
+            // Lerp returns startValue when t is outside the range [0, 1], so
+            // if the decelerator is pressed, -3000dt is returned.
             CurrentRpm + Mathf.Lerp(
                 -3000 * Time.deltaTime,
                 5000 * Time.deltaTime,
@@ -97,14 +109,29 @@ public class Engine : MonoBehaviour
     /// </summary>
     void CalculateTorqueAndRpmComplex()
     {
-        // TODO: find out how lerp works and how it applies to this implementation.
-        // Adjust the index ThrottleInput is raised to to alter throttle responsiveness.
-        // Try values 2 and 0.75, then play around with others to see what works.
+        // Evaluate the current torque from the torque curve based on 
+        // CurrentRpm and ThrottleInput.
+        //
+        // First, look up the torque curve to get the maximum possible torque
+        // at the current engine RPM. Maximum torque at a given RPM is obtained
+        // when ThrottleInput == 1. If ThrotttleInput <= 0, then CurrentTorque
+        // equals backTorque. This negative value results in a negative angular
+        // velocity, causing RPMs to drop. If ThrottleInput is between 0 and 1,
+        // then, logically, a value between backTorque and the max torque at
+        // the given RPM is returned.
+        //
+        // The interpolation parameter acts as the responsiveness of the throttle.
+        // If you're using a keyboard, keeping this value small (< 0.5f) might 
+        // be better, since the throttle key is either pressed or it isn't.
+        // If you're using an actual pedal, a value of 1 maps it directly to 
+        // how far the pedal is pressed down, which is probably the preferred
+        // behaviour.
         CurrentTorque = Mathf.Lerp(
             backTorque,
             torqueCurve.Evaluate(CurrentRpm) * ThrottleInput,
-            Mathf.Pow(ThrottleInput, 1)
-        );
+            Mathf.Pow(ThrottleInput, 1));
+
+        Debug.Log(CurrentTorque);
 
         // Applying formula: M = iota * alpha --> alpha = M / iota
         angularAcceleration = CurrentTorque / inertia;

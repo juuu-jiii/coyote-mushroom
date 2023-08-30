@@ -168,35 +168,6 @@ public class Wheel : MonoBehaviour
     {
         // Address snapping issue caused by steering in one direction before 
         // quickly steering in the opposite direction.
-        // Use Lerp() to smoothly rotate between wheelAngle and SteerAngle.
-        // if (elapsedTime < steerTime) // * Time.deltaTime)
-        // {
-        //     Debug.Log("!=");
-        //     elapsedTime += Time.deltaTime;
-        //     float t = elapsedTime / steerTime; // * Time.deltaTime;
-        //     wheelAngle = Mathf.Lerp(wheelAngle, SteerAngle, t);
-
-        //     // Debug.Log("SteerAngle = " + SteerAngle);
-        //     // Debug.Log(t);
-        //     // float t = wheelAngle / SteerAngle;
-        // }
-        // else
-        // {
-        //     Debug.Log("==");
-        //     wheelAngle = SteerAngle;
-        //     elapsedTime = 0;
-        // }
-        // wheelAngle = Mathf.Lerp(wheelAngle, SteerAngle, steerTime * Time.deltaTime);
-        // float currentSteerTime = steerTime;
-
-        // if (canSteer && (Mathf.Sign(steerInput) != Mathf.Sign(wheelAngle)))
-        // {
-        //     // Debug.Log("wheelAngle = " + wheelAngle);
-        //     currentSteerTime *= 2;
-        // }
-
-        // Address snapping issue caused by steering in one direction before 
-        // quickly steering in the opposite direction.
         //
         // Use MoveTowards() to smoothly move wheelAngle (the current angle the
         // wheels are pointing in) towards SteerAngle (the angle the wheels
