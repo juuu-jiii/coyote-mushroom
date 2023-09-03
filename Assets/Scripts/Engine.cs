@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Definintion of engine-related specifications and behaviours.
+/// Definition of engine-related specifications and behaviours.
 /// </summary>
 public class Engine : MonoBehaviour
 {
@@ -100,7 +100,9 @@ public class Engine : MonoBehaviour
     /// <summary>
     /// Simple method of approximating engine torque. Ignores back torque.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// The current engine torque.
+    /// </returns>
     float CalculateTorqueSimple()
     {
         return torqueCurve.Evaluate(CurrentRpm) * ThrottleInput;
@@ -114,24 +116,43 @@ public class Engine : MonoBehaviour
     {
         // Evaluate the current torque from the torque curve based on 
         // CurrentRpm and ThrottleInput.
-        //
-        // First, look up the torque curve to get the maximum possible torque
-        // at the current engine RPM. Maximum torque at a given RPM is obtained
-        // when ThrottleInput == 1. If ThrotttleInput <= 0, then CurrentTorque
-        // equals backTorque. This negative value results in a negative angular
-        // velocity, causing RPMs to drop. If ThrottleInput is between 0 and 1,
-        // then, logically, a value between backTorque and the max torque at
-        // the given RPM is returned.
-        //
-        // The interpolation parameter acts as the responsiveness of the throttle.
-        // If you're using a keyboard, keeping this value small (< 0.5f) might 
-        // be better, since the throttle key is either pressed or it isn't.
-        // If you're using an actual pedal, a value of 1 maps it directly to 
-        // how far the pedal is pressed down, which is probably the preferred
-        // behaviour.
         CurrentTorque = Mathf.Lerp(
+            // First, look up the torque curve to get the maximum possible torque
+            // at the current engine RPM. Maximum torque at a given RPM is obtained
+            // when ThrottleInput == 1. If ThrotttleInput <= 0, then CurrentTorque
+            // equals backTorque. This negative value results in a negative angular
+            // velocity, causing RPMs to drop. If ThrottleInput is between 0 and 1,
+            // then, logically, a value between backTorque and the max torque at
+            // the given RPM is returned.
+            //
+            // When working with a single engine torque curve (torque versus RPM),
+            // the curve plots values assuming full throttle. If the throttle is at
+            // 50% i.e., halfway pressed, then, at a given RPM, only 50% of the
+            // torque shown by the curve is generated. This is a simplification;
+            // engines have a torque map, where a slightly different curve exists
+            // for each throttle level. The single curve works nicely for a 
+            // semi-realistic simulation, however.
             backTorque,
             torqueCurve.Evaluate(CurrentRpm) * ThrottleInput,
+
+            // Depending on the throttle value, the engine output torque is a blend 
+            // between backTorque and the actual engine torque. At zero throttle, 
+            // the engine "brakes" the vehicle, while as throttle input increases, 
+            // the engine propels the vehicle. Pow() is used to make braking 
+            // prevalent when ThrottleInput is 0 or nearly 0. It has a role in 
+            // determining the throttle level at which the transition between
+            // back torque and actual driving torque takes place. Notice that, when
+            // the interpolation parameter, t > 1, this transition point gets moved 
+            // higher.
+            //
+            // We can therefore also say that t acts to adjust the responsiveness 
+            // of the throttle.
+            //
+            // If you're using a keyboard, keeping this value small (< 0.5f) might 
+            // be better, since the throttle key is either pressed or it isn't.
+            // If you're using an actual pedal, a value of 1 maps it directly to 
+            // how far the pedal is pressed down, which is probably the preferred
+            // behaviour.
             Mathf.Pow(ThrottleInput, 1));
 
         // Applying formula: M = iota * alpha --> alpha = M / iota
