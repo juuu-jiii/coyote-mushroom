@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Definintion of engine-related specifications and behaviours.
+/// </summary>
 public class Engine : MonoBehaviour
 {
     [Header("Curve")]
@@ -131,8 +134,6 @@ public class Engine : MonoBehaviour
             torqueCurve.Evaluate(CurrentRpm) * ThrottleInput,
             Mathf.Pow(ThrottleInput, 1));
 
-        Debug.Log(CurrentTorque);
-
         // Applying formula: M = iota * alpha --> alpha = M / iota
         angularAcceleration = CurrentTorque / inertia;
 
@@ -159,6 +160,7 @@ public class Engine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Debug.Log(Mathf.InverseLerp(100, 0, 47));
         // Debug.Log(CurrentRpm + Mathf.Lerp(
         //         -3000 * Time.deltaTime,
         //         5000 * Time.deltaTime,
