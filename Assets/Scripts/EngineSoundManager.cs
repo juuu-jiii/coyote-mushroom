@@ -10,7 +10,7 @@ public class EngineSoundManager : MonoBehaviour
     [SerializeField] private EngineSound[] engineSounds;
     [SerializeField] private Engine engine;
     [Range(0, 1)]
-    [SerializeField] private float masterVolume;
+    public float masterVolume;
     private float[] workingVolumes;
     private float totalVolume;
 
@@ -27,10 +27,16 @@ public class EngineSoundManager : MonoBehaviour
 
         for (int i = 0; i < engineSounds.Length; i++)
         {
+            // if (i == 0)
+            // {
+            //     Debug.Log(engineSounds[i].GetVolumeFromRpm(engine.CurrentRpm));
+            // }
             engineSounds[i].SetPitchFromRpm(engine.CurrentRpm);
             workingVolumes[i] = engineSounds[i].GetVolumeFromRpm(engine.CurrentRpm);
             totalVolume += workingVolumes[i];
         }
+
+        // Debug.Log(totalVolume);
 
         if (totalVolume > 0f)
         {
