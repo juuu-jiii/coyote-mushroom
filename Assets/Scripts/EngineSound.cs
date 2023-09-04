@@ -1,38 +1,60 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Pitch- and volume-related methods for engine audio.
+/// Pitch- and volume-related data and methods for a single engine sound file.
 /// Adapted from https://forum.unity.com/threads/car-engine-sound-crossfade.1269065/#post-8056763
 /// </summary>
 public class EngineSound : MonoBehaviour
 {
+    [Tooltip("Audio Source containing the engine sound to be played.")]
     [SerializeField] private AudioSource audioSource;
+    [Tooltip("The lowest RPM at which this engine sound can be heard.")]
     [SerializeField] private float minRpm;
-    [Tooltip("The RPM at which pitch for the audio source's clip is highest.")]
+    [Tooltip("The RPM at which the volume for the Audio Source's clip is maximum. For values above or below this within the range [minRpm, maxRpm], volume will be reduced proportionally.")]
     [SerializeField] private float peakRpm;
+    [Tooltip("The highest RPM at which this engine sound can be heard.")]
     [SerializeField] private float maxRpm;
-    [Tooltip("the RPM at which the engine note should be played at pitch 1 (default pitch). If the audio assets you have state the RPM of the engine, use that, otherwise you'll need to use trial and error.")]
+    [Tooltip("The RPM at which pitch for the engine sound is 1 (default pitch). For RPMs below this value, the engine sound will be pitched down. For RPMs above this value, the engine sound will be pitched up. Use the RPM values provided by the audio assets, if any. If those are not provided, use trial and error (i.e., tune by ear).")]
     [SerializeField] private float pitchReferenceRpm;
 
+    /// <summary>
+    /// Pitch the engine sound up or down based on the current RPM value 
+    /// relative to that of pitchReferenceRpm.
+    /// </summary>
+    /// <param name="rpm">
+    /// The engine's current RPM.
+    /// </param>
     public void SetPitchFromRpm(float rpm)
     {
-        // Normalise rpm based on the pitch reference value. Use the result to
-        // update the pitch of the audio source.
+        // If rpm > pitchReferenceRpm, the engine sound is pitched up.
+        // If rpm < pitchReferenceRpm, the engine sound is pitched down.
+        // If rpm == pitchReferenceRpm, the division equals 1, meaning the
+        // engine sound is played at default pitch.
         audioSource.pitch = rpm / pitchReferenceRpm;
     }
 
+    /// <summary>
+    /// Uses minRpm, maxRpm, and peakRpm to fade the engine sound in/out.
+    /// </summary>
+    /// <param name="rpm">
+    /// The engine's current RPM.
+    /// </param>
+    /// <returns>
+    /// The volume at which this engine sound should be played.
+    /// </returns>
     public float GetVolumeFromRpm(float rpm)
     {
         // Do not play this sound if rpm is out of range.
         if (rpm < minRpm || rpm > maxRpm) return 0f;
 
-        // If rpm is below peak, the audio source's clip should be pitched down.
-        // Use inverse lerp to get the pitch at which it should be played at, as
-        // a normalised value in the range [0, 1].
-        // Use InverseLerp to "fade in" audio by passing in a = minRpm and 
-        // b = peakRpm.
+        // If rpm is above/below peak, the volume of the Audio Source's clip
+        // should be reduced proportionally. Use InverseLerp to get the volume
+        // at which it should be played at, as a normalised value in the range 
+        // [0, 1].
+        //
+        // This way, InverseLerp is used to "fade in/out" audio by passing in 
+        // a = minRpm and b = peakRpm as reference points by which to base
+        // output audio on.
         //
         // InverseLerp returns the normalised "point" rpm lies between a and b.
         // - If a < b, InverseLerp behaves as expected.
@@ -46,6 +68,12 @@ public class EngineSound : MonoBehaviour
             return Mathf.InverseLerp(maxRpm, peakRpm, rpm);
     }
 
+    /// <summary>
+    /// Set the volume of the Audio Source, muting it if necessary.
+    /// </summary>
+    /// <param name="volume">
+    /// Value to set the Audio Source's volume to.
+    /// </param>
     public void SetVolume(float volume)
     {
         audioSource.volume = volume;
