@@ -43,7 +43,7 @@ public class Gearbox : MonoBehaviour
     {
         CurrentGear = gearTarget;
 
-        // The number of engine rotations per wheel rotation is given by the 
+        // The number of engine revolutions per wheel rotation is given by the 
         // current gear ratio multiplied by the final drive ratio.
         totalGearRatio = gearRatios[CurrentGear] * finalDrive;
 
