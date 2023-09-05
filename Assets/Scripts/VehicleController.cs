@@ -18,10 +18,13 @@ public class VehicleController : MonoBehaviour
     * The results of these calculations then get passed to the Wheel scripts.
     */
 
+    [Header("Component Scripts")]
     [Tooltip("Array tracking all wheels (scripts) of this vehicle.")]
     [SerializeField] private Wheel[] wheels;
     [Tooltip("This vehicle's engine script.")]
     [SerializeField] private Engine engine;
+    [Tooltip("The vehicle's gearbox script.")]
+    [SerializeField] private Gearbox gearbox;
 
     [Header("Centre of Mass")]
     [Tooltip("The Rigidbody component of the vehicle GameObject.")]
@@ -171,7 +174,12 @@ public class VehicleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Backspace)) body.SetActive(!body.activeInHierarchy);
         if (Input.GetKeyDown(KeyCode.Tab)) areForcesRendered = !areForcesRendered;
 
+        // Draw debug forces.
         if (areForcesRendered) RenderForces();
+
+        // Shift up/down.
+        if (Input.GetKeyDown(KeyCode.LeftShift)) gearbox.GearUp();
+        if (Input.GetKeyDown(KeyCode.LeftControl)) gearbox.GearDown();
 
         // Read player input.
         steerInput = Input.GetAxis("Horizontal");

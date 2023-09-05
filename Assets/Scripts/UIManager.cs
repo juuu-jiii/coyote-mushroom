@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI torqueAndRpm;
     [Tooltip("The slider used to visually represent the vehicle's current RPM.")]
     [SerializeField] private Slider rpmSlider;
+    [Tooltip("The TMPro text object to log computed values for the vehicle's current gear.")]
+    [SerializeField] private TextMeshProUGUI currentGear;
 
     [Header("Vehicle")]
     [Tooltip("The VehicleController GameObject associated with the vehicle whose data is to be logged to the screen.")]
@@ -24,6 +26,8 @@ public class UIManager : MonoBehaviour
 
     [Tooltip("This vehicle's engine script.")]
     [SerializeField] private Engine engine;
+    [Tooltip("This vehicle's gearbox script.")]
+    [SerializeField] private Gearbox gearbox;
 
     /// <summary>
     /// Reference to VehicleController.wheels as a readonly collection.
@@ -92,6 +96,8 @@ public class UIManager : MonoBehaviour
         torqueAndRpm.text =
             $"Torque: {engine.CurrentTorque}\n" +
             $"RPM: {engine.CurrentRpm}\n";
+
+        currentGear.text = $"Current Gear: {gearbox.gears[gearbox.CurrentGear]}";
 
         rpmSlider.value = engine.CurrentRpm;
     }
