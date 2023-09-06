@@ -13,9 +13,9 @@ public class Engine : MonoBehaviour
 
     [Header("Engine Specs")]
     [Tooltip("The lowest possible value the engine's revs can dip to i.e., when the engine is idle.")]
-    [SerializeField] private float idleRpm;
+    [SerializeField] private int idleRpm;
     [Tooltip("The highest possible value the engine's revs can hit i.e., when the engine is redlining.")]
-    [SerializeField] private float maxRpm;
+    [SerializeField] private int maxRpm;
     [Tooltip("The engine's inertia. The smaller and lighter an engine, the lower the inertia. For passenger cars, engine inertia typically sits between 0.2 and 0.35.")]
     [SerializeField] private float inertia;
     [Tooltip("The amount by which to reduce RPMs when neither the accelerator or the brake are pressed aka engine braking.")]
