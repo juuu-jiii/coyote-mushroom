@@ -360,7 +360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throttleOn: {fileID: 41394396}
   throttleOff: {fileID: 353484842}
-  blendFactor: 0.01
+  blendFactor: 2
   engine: {fileID: 791669402}
 --- !u!1 &172892413
 GameObject:
@@ -2085,10 +2085,10 @@ MonoBehaviour:
   - 1.271
   - 1
   - 0.974
-  gears: 52004e00310032003300340035003600
   finalDrive: 3.538
   efficiency: 0.8
   shiftTime: 0.5
+  gears: 52004e00310032003300340035003600
 --- !u!1 &815108029
 GameObject:
   m_ObjectHideFlags: 0

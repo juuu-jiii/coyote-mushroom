@@ -37,15 +37,15 @@ public class ThrottleBlender : MonoBehaviour
         // maximum volume at 1 to prevent it from going out of range.
         if (engine.ThrottleInput > 0f)
         {
-            throttleOn.masterVolume = Mathf.Min(1, throttleOn.masterVolume + blendFactor);
-            throttleOff.masterVolume = Mathf.Max(0, throttleOff.masterVolume - blendFactor);
+            throttleOn.masterVolume = Mathf.Min(1, throttleOn.masterVolume + blendFactor * Time.deltaTime);
+            throttleOff.masterVolume = Mathf.Max(0, throttleOff.masterVolume - blendFactor * Time.deltaTime);
         }
         // If throttle is not pressed, gradually fade out throttle on sounds, 
         // while fading in throttle off sounds.
         else
         {
-            throttleOn.masterVolume = Mathf.Max(0, throttleOn.masterVolume - blendFactor);
-            throttleOff.masterVolume = Mathf.Min(1, throttleOff.masterVolume + blendFactor);
+            throttleOn.masterVolume = Mathf.Max(0, throttleOn.masterVolume - blendFactor * Time.deltaTime);
+            throttleOff.masterVolume = Mathf.Min(1, throttleOff.masterVolume + blendFactor * Time.deltaTime);
         }
     }
 }

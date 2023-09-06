@@ -360,7 +360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throttleOn: {fileID: 41394396}
   throttleOff: {fileID: 353484842}
-  blendFactor: 0.01
+  blendFactor: 2
   engine: {fileID: 791669402}
 --- !u!1 &172892413
 GameObject:
@@ -899,8 +899,10 @@ MonoBehaviour:
   computedWheelData: {fileID: 243074336}
   torqueAndRpm: {fileID: 1601525524}
   rpmSlider: {fileID: 1924344668}
+  currentGear: {fileID: 0}
   vehicleController: {fileID: 791669401}
   engine: {fileID: 791669402}
+  gearbox: {fileID: 0}
 --- !u!114 &267105447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1959,6 +1961,7 @@ MonoBehaviour:
   - {fileID: 172892415}
   - {fileID: 1833048566}
   engine: {fileID: 791669402}
+  gearbox: {fileID: 0}
   vehicleRb: {fileID: 791669399}
   centreOfMass: {x: 0, y: 0.1, z: 0}
   body: {fileID: 1558319720}
