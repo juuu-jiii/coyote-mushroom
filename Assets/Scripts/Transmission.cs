@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public class Transmission : MonoBehaviour
 {
+    /// <summary>
+    /// Defines supported transmission types.
+    /// </summary>
     private enum DriveType
     {
         FWD,
@@ -13,29 +16,51 @@ public class Transmission : MonoBehaviour
         AWD
     }
 
+    [Tooltip("This vehicle's drivetrain type.")]
     [SerializeField] private DriveType driveType;
+    [Tooltip("Reference to this vehicle's engine script.")]
     [SerializeField] private Engine engine;
+    [Tooltip("Reference to this vehicle's gearbox script.")]
     [SerializeField] private Gearbox gearbox;
+    [Tooltip("Reference to this vehicle's controller script.")]
     [SerializeField] private VehicleController vehicleController;
+    [Tooltip("Ratio of torque supplied to the front wheels. Used when Drive Type is set to AWD.")]
     [SerializeField][Range(0, 1)] private float torqueRatioFront;
 
-    private const int NumberOfWheels = 2;
+    /// <summary>
+    /// There are two sets of wheels in a regular vehicle: one in front and one in the back.
+    /// </summary>
+    private const int SetsOfWheels = 2;
+
+    /// <summary>
+    /// Temporarily hardcoded value for the differential (currently set to fully locked).
+    /// </summary>
     private const float DifferentialValue = 0.5f;
 
-    private float[] torqueRatio = new float[NumberOfWheels];
+    /// <summary>
+    /// Values for the ratio of torque delivered to the front and rear sets of wheels.
+    /// </summary>
+    private float[] torqueRatio = new float[SetsOfWheels];
 
     /// <summary>
     /// Reference to VehicleController.wheels as a readonly collection.
     /// </summary>
     private ReadOnlyCollection<Wheel> wheels;
 
+    /// <summary>
+    /// Performs torque calculations for each set of wheels.
+    /// </summary>
     private void CalculateWheelDriveTorque()
     {
+        // The torque available at a wheel depends primarily on the engine's torque, the product of the current drive
+        // ratio and the final drive ratio. However, we must also account for the vehicle's drivetrain layout and the
+        // current state of the differential.
+        // This calculation does not account for transmission losses (typically 10-12%)
         for (int i = 0; i < wheels.Count; i++)
         {
-            wheels[i].driveTorque = Mathf.Max(0, engine.CurrentTorque)
+            wheels[i].torque = Mathf.Max(0, engine.CurrentTorque)
                                     * gearbox.TotalGearRatio
-                                    * torqueRatio[i / NumberOfWheels]
+                                    * torqueRatio[i / SetsOfWheels]
                                     * DifferentialValue;
         }
     }
@@ -45,6 +70,7 @@ public class Transmission : MonoBehaviour
     {
         wheels = vehicleController.Wheels;
 
+        // Assign torque ratios to each set of wheels depending on the drivetrain layout of the vehicle.
         switch (driveType)
         {
             case DriveType.FWD:

@@ -94,7 +94,7 @@ public class UIManager : MonoBehaviour
                 $"{wheel.WheelPos} fX: {wheel.fX}\n" +
                 $"{wheel.WheelPos} fY: {wheel.fY}\n" +
                 $"{wheel.WheelPos} fZ: {wheel.fZ}\n" +
-                $"{wheel.WheelPos} driveTorque: {wheel.driveTorque}\n" +
+                $"{wheel.WheelPos} driveTorque: {wheel.torque}\n" +
                 "\n";
         }
 

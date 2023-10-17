@@ -161,9 +161,9 @@ public class Wheel : MonoBehaviour
     private float localDeltaWheelRotation;
 
     /// <summary>
-    /// The drive torque of this wheel.
+    /// The torque available at this wheel.
     /// </summary>
-    public float driveTorque;
+    public float torque;
 
     /// <summary>
     /// The inertia of this wheel.
@@ -319,7 +319,7 @@ public class Wheel : MonoBehaviour
     void FixedUpdate()
     {
         #region Calculate wheel angular acceleration and velocity
-        AngularAcceleration = driveTorque / inertia;
+        AngularAcceleration = torque / inertia;
         AngularVelocity += AngularAcceleration * Time.deltaTime;
 
         // The formula engine.AngularVelocity / gearbox.TotalGearRatio gives
