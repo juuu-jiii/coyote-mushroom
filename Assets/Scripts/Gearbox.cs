@@ -29,7 +29,7 @@ public class Gearbox : MonoBehaviour
     /// <summary>
     /// The number of engine rotations per wheel rotation for the current gear.
     /// </summary>
-    private float totalGearRatio;
+    public float TotalGearRatio { get; private set; }
 
     /// <summary>
     /// Whether the vehicle is in the process of shifting gears.
@@ -45,7 +45,7 @@ public class Gearbox : MonoBehaviour
 
         // The number of engine revolutions per wheel rotation is given by the 
         // current gear ratio multiplied by the final drive ratio.
-        totalGearRatio = gearRatios[CurrentGear] * finalDrive;
+        TotalGearRatio = gearRatios[CurrentGear] * finalDrive;
 
         // Shift operation is complete.
         shifting = false;
@@ -68,7 +68,7 @@ public class Gearbox : MonoBehaviour
         // Gear is in N while in the midst of shifting.
         // Since neutral gear has a ratio of 0, totalGearRatio = 0.
         CurrentGear = 1;
-        totalGearRatio = 0;
+        TotalGearRatio = 0;
 
         return true;
     }

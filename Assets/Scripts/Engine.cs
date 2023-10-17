@@ -49,12 +49,12 @@ public class Engine : MonoBehaviour
     /// <summary>
     /// The current angular acceleration of the engine.
     /// </summary>
-    private float angularAcceleration;
+    public float AngularAcceleration { get; private set; }
 
     /// <summary>
     /// The current angular velocity of the engine.
     /// </summary>
-    private float angularVelocity;
+    public float AngularVelocity { get; private set; }
 
     /// <summary>
     /// Conversion constant for moving between rpm and rad/s.
@@ -156,20 +156,20 @@ public class Engine : MonoBehaviour
             Mathf.Pow(ThrottleInput, 1));
 
         // Applying formula: M = iota * alpha --> alpha = M / iota
-        angularAcceleration = CurrentTorque / inertia;
+        AngularAcceleration = CurrentTorque / inertia;
 
         // Applying formula: w1 = w0 + alpha * deltaTime
         // Clamp values between idle/maxRpm (converted to rad/s) to prevent 
         // revs from going out of range.
-        angularVelocity = Mathf.Clamp(
-            angularVelocity + angularAcceleration * Time.deltaTime,
+        AngularVelocity = Mathf.Clamp(
+            AngularVelocity + AngularAcceleration * Time.deltaTime,
             idleRpm * RpmToRadPerSec,
             maxRpm * RpmToRadPerSec
         );
 
         // angularVelocity stores the RPM of the engine in rad/s. Multiply by
         // RadPerSecToRpm to convert to the correct units.
-        CurrentRpm = angularVelocity * RadPerSecToRpm;
+        CurrentRpm = AngularVelocity * RadPerSecToRpm;
     }
 
     // Start is called before the first frame update

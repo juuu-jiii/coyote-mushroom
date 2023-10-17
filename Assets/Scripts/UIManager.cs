@@ -81,15 +81,20 @@ public class UIManager : MonoBehaviour
         foreach (Wheel wheel in wheels)
         {
             computedWheelData.text +=
-                $"{wheel.WheelPos} steerAngle: {wheel.SteerAngle}\n" +
-                $"{wheel.WheelPos} currSpringLength: {wheel.CurrSpringLength}\n" +
-                $"{wheel.WheelPos} springForce: {wheel.SpringForce}\n" +
-                $"{wheel.WheelPos} springVelocity: {wheel.SpringVelocity}\n" +
-                $"{wheel.WheelPos} damperForce: {wheel.DamperForce}\n" +
-                $"{wheel.WheelPos} suspensionForce: {wheel.SuspensionForce}\n" +
+                // $"{wheel.WheelPos} steerAngle: {wheel.SteerAngle}\n" +
+                // $"{wheel.WheelPos} currSpringLength: {wheel.CurrSpringLength}\n" +
+                // $"{wheel.WheelPos} springForce: {wheel.SpringForce}\n" +
+                // $"{wheel.WheelPos} springVelocity: {wheel.SpringVelocity}\n" +
+                // $"{wheel.WheelPos} damperForce: {wheel.DamperForce}\n" +
+                // $"{wheel.WheelPos} suspensionForce: {wheel.SuspensionForce}\n" +
+                $"{wheel.WheelPos} angularVelocity: {wheel.AngularVelocity}\n" +
+                $"{wheel.WheelPos} angularAcceleration: {wheel.AngularAcceleration}\n" +
+                $"{wheel.WheelPos} inertia: {wheel.inertia}\n" +
+                $"{wheel.WheelPos} maxAngularVelocity: {wheel.maxAngularVelocity}\n" +
                 $"{wheel.WheelPos} fX: {wheel.fX}\n" +
                 $"{wheel.WheelPos} fY: {wheel.fY}\n" +
                 $"{wheel.WheelPos} fZ: {wheel.fZ}\n" +
+                $"{wheel.WheelPos} driveTorque: {wheel.driveTorque}\n" +
                 "\n";
         }
 

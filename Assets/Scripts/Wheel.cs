@@ -97,17 +97,27 @@ public class Wheel : MonoBehaviour
     [Header("Wheel")]
     [Tooltip("Whether this wheel can be steered.")]
     [SerializeField] private bool canSteer;
+
     [Tooltip("The position of this wheel on the vehicle.")]
     [SerializeField] private WheelPosition wheelPos;
 
     [Tooltip("The radius of the wheel (in m).")]
-    [SerializeField] private float wheelRadius;
+    [SerializeField] private float radius;
+
+    [Tooltip("The mass of the wheel (in kg).")]
+    [SerializeField] private float mass;
 
     [Tooltip("Rate at which to adjust wheelAngle such that it equals SteerAngle. The higher this value is, the quicker wheelAngle will equal SteerAngle.")]
     [SerializeField] private float steerRate;
 
     [Tooltip("The GameObject containing the mesh for this wheel.")]
     [SerializeField] private GameObject wheelMesh;
+
+    [Header("Other")]
+    [Tooltip("Reference to this vehicle's engine script.")]
+    [SerializeField] private Engine engine;
+    [Tooltip("Reference to this vehicle's gearbox script.")]
+    [SerializeField] private Gearbox gearbox;
 
     /// <summary>
     /// Gets the position of this wheel on the vehicle.
@@ -130,14 +140,37 @@ public class Wheel : MonoBehaviour
     private Vector3 localLinearVelocity;
 
     /// <summary>
-    /// The angular velocity (rad/s) of this wheel, expressed in terms of its local space.
+    /// The angular velocity (rad/s) of this wheel.
     /// </summary>
-    private float localAngularVelocity;
+    public float AngularVelocity { get; private set; }
+
+    /// <summary>
+    /// Maximum angular velocity given the RPM of the engine and the total gear 
+    /// ratio, assuming ideal conditions and ignoring energy loss.
+    /// </summary>
+    public float maxAngularVelocity;
+
+    /// <summary>
+    /// The angular acceleration (rad/s^2) of this wheel.
+    /// </summary>
+    public float AngularAcceleration { get; private set; }
 
     /// <summary>
     /// The delta by which to rotate this wheel (degrees) during the current frame.
     /// </summary>
     private float localDeltaWheelRotation;
+
+    /// <summary>
+    /// The drive torque of this wheel.
+    /// </summary>
+    public float driveTorque;
+
+    /// <summary>
+    /// The inertia of this wheel.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    public float inertia;
 
     /// <summary>
     /// The longitudinal (forward) force applied to this wheel.
@@ -154,12 +187,25 @@ public class Wheel : MonoBehaviour
     /// </summary>
     public float fX;
 
+    /// <summary>
+    /// Calculates inertia of this wheel using the formula for a closed cylinder
+    /// i.e., the closest approximation to the shape of a wheel. 
+    /// (I = 0.5 * m * r ^ 2)
+    /// </summary>
+    private void CalculateInertia()
+    {
+        inertia = 0.5f * mass * radius * radius;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         // Range of values for spring length is restLength +- springTravel.
         minLength = restLength - springTravel;
         maxLength = restLength + springTravel;
+
+        AngularVelocity = 0;
+        CalculateInertia();
     }
 
     // Update is called once per frame
@@ -245,8 +291,10 @@ public class Wheel : MonoBehaviour
         #endregion;
 
         // Calculate the wheel's local angular velocity.
-        localAngularVelocity = localLinearVelocity.z / wheelRadius;
-        localDeltaWheelRotation = localAngularVelocity * Time.deltaTime * Mathf.Rad2Deg;
+        // AngularVelocity = localLinearVelocity.z / radius;
+
+        // Animate the rotation of the wheel based on its angular velocity.
+        localDeltaWheelRotation = AngularVelocity * Time.deltaTime * Mathf.Rad2Deg;
 
         // Add the calculated rotation to the local transform of wheelMesh
         // i.e., rotate the wheel!
@@ -270,8 +318,33 @@ public class Wheel : MonoBehaviour
     // Perform physics calculations here.
     void FixedUpdate()
     {
-        // Calculate suspension physics when the vehicle is on the ground.
-        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, maxLength + wheelRadius))
+        #region Calculate wheel angular acceleration and velocity
+        AngularAcceleration = driveTorque / inertia;
+        AngularVelocity += AngularAcceleration * Time.deltaTime;
+
+        // The formula engine.AngularVelocity / gearbox.TotalGearRatio gives
+        // the maximum angular velocity a wheel can have for a given gear.
+        // Explicitly handle the case where currentGear is N, else we will be
+        // dividing by zero. Set it equal to a random large number instead.
+        maxAngularVelocity = gearbox.TotalGearRatio == 0 ?
+                                9999
+                                : engine.AngularVelocity / gearbox.TotalGearRatio;
+
+        // Do not let the wheels spin faster than the engine.
+        if (gearbox.CurrentGear > 1)
+        {
+            AngularVelocity = Mathf.Min(
+                Mathf.Abs(AngularVelocity),
+                Mathf.Abs(maxAngularVelocity))
+                * Mathf.Sign(maxAngularVelocity);
+        }
+
+        // AngularVelocity = gearbox.TotalGearRatio == 0 ? 0 : engine.AngularVelocity / gearbox.TotalGearRatio;
+        #endregion
+
+        // TODO: move suspension logic into separate script
+        #region Calculate suspension physics when the vehicle is on the ground.
+        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, maxLength + radius))
         {
             // ======================================================================================
             // ============================ SUSPENSION CALCULATIONS =================================
@@ -281,7 +354,7 @@ public class Wheel : MonoBehaviour
 
             // wheelRadius is a constant that has been set in the Inspector.
             // hit.distance = hit.point - raycast origin
-            CurrSpringLength = hit.distance - wheelRadius;
+            CurrSpringLength = hit.distance - radius;
 
             // Do not let the spring length exceed minLength or maxLength.
             CurrSpringLength = Mathf.Clamp(CurrSpringLength, minLength, maxLength);
@@ -381,5 +454,6 @@ public class Wheel : MonoBehaviour
             // fX = fZ = 0; can also just leave this out because it doesn't seem to make a difference?
             CurrSpringLength = maxLength;
         }
+        #endregion
     }
 }
