@@ -25,7 +25,7 @@ public class Transmission : MonoBehaviour
     [Tooltip("Reference to this vehicle's controller script.")]
     [SerializeField] private VehicleController vehicleController;
     [Tooltip("Ratio of torque supplied to the front wheels. Used when Drive Type is set to AWD.")]
-    [SerializeField][Range(0, 1)] private float torqueRatioFront;
+    [SerializeField][Range(0, 1)] private float torqueBias;
 
     /// <summary>
     /// There are two sets of wheels in a regular vehicle: one in front and one in the back.
@@ -55,7 +55,8 @@ public class Transmission : MonoBehaviour
         // The torque available at a wheel depends primarily on the engine's torque, the product of the current drive
         // ratio and the final drive ratio. However, we must also account for the vehicle's drivetrain layout and the
         // current state of the differential.
-        // This calculation does not account for transmission losses (typically 10-12%)
+        // This calculation does not account for transmission losses (typically 10-12%), which means for greater
+        // accuracy we should multiply the following by 0.9f (transmission efficiency for 2 driven axles)
         for (int i = 0; i < wheels.Count; i++)
         {
             wheels[i].torque = Mathf.Max(0, engine.CurrentTorque)
@@ -85,8 +86,8 @@ public class Transmission : MonoBehaviour
                 break;
             case DriveType.AWD:
                 // All power gets delivered to the front wheels.
-                torqueRatio[0] = torqueRatioFront;
-                torqueRatio[1] = 1 - torqueRatioFront;
+                torqueRatio[0] = torqueBias;
+                torqueRatio[1] = 1 - torqueBias;
                 break;
         }
     }
