@@ -485,7 +485,11 @@ public class Wheel : MonoBehaviour
 
 
 
-
+            // Recall that the reason for multiplying by -1 is because the direction
+            // of the x-component of the vector is the direction in which we DON'T
+            // want to slide.
+            // Remember that this negation can be adjusted. We can multiply by any
+            // value to produce a given handling result.
             lateralSlipNormalised = Mathf.Clamp(localLinearVelocityVector.x * corneringStiffness * (-1f), -1f, 1f);
 
             // If the wheel's linear velocity and the longitudinal slip 
@@ -558,6 +562,7 @@ public class Wheel : MonoBehaviour
             fZ = tyreForce.y;
             fX = tyreForce.x;
 
+            #region Old implementation of forwards and sideways forces
             // Perform calculations for the forward and sideways forces acting 
             // on this wheel.
             // fZ is simplified for now just to provide a "proof-of-concept" so
@@ -605,6 +610,7 @@ public class Wheel : MonoBehaviour
             // Note that we take SpringForce and not fY 
             // (which is SpringForce + DamperForce) here.
             // fX = Mathf.Clamp(SpringForce * localLinearVelocityVector.x * (-1), -fY, fY);
+            #endregion
 
             // Add the force calculated above to the rigidbody.
             // vehicleRb.AddForce(force) is incorrect - it applies a 
