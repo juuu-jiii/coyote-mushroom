@@ -21,6 +21,8 @@ public class VehicleController : MonoBehaviour
     [Header("Component Scripts")]
     [Tooltip("Array tracking all wheels (scripts) of this vehicle.")]
     [SerializeField] private Wheel[] wheels;
+    [Tooltip("Array tracking all suspension scripts of this vehicle.")]
+    [SerializeField] private Suspension[] suspensions;
     [Tooltip("This vehicle's engine script.")]
     [SerializeField] private Engine engine;
     [Tooltip("The vehicle's gearbox script.")]
@@ -55,6 +57,11 @@ public class VehicleController : MonoBehaviour
     private ReadOnlyCollection<Wheel> readonlyWheels;
 
     /// <summary>
+    /// Encapsulation container for the suspensions array.
+    /// </summary>
+    private ReadOnlyCollection<Suspension> readonlySuspensions;
+
+    /// <summary>
     /// Public getter for readonlyWheels.
     /// </summary>
     public ReadOnlyCollection<Wheel> Wheels
@@ -65,6 +72,20 @@ public class VehicleController : MonoBehaviour
                 readonlyWheels = new ReadOnlyCollection<Wheel>(wheels);
 
             return readonlyWheels;
+        }
+    }
+
+    /// <summary>
+    /// Public getter for readonlySuspensions.
+    /// </summary>
+    public ReadOnlyCollection<Suspension> Suspensions
+    {
+        get
+        {
+            if (readonlySuspensions == null)
+                readonlySuspensions = new ReadOnlyCollection<Suspension>(suspensions);
+
+            return readonlySuspensions;
         }
     }
 
@@ -125,7 +146,7 @@ public class VehicleController : MonoBehaviour
         {
             // Scale fX/Y/Z down for representation purposes when debugging.
             scaledFX = wheels[i].fX / forceScale;
-            scaledFY = wheels[i].fY / forceScale;
+            scaledFY = suspensions[i].fY / forceScale;
             scaledFZ = wheels[i].fZ / forceScale;
 
             // Get the right/upward/forward (unit) vectors of each wheel.

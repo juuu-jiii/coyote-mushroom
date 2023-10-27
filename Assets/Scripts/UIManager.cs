@@ -34,6 +34,11 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private ReadOnlyCollection<Wheel> wheels;
 
+    /// <summary>
+    /// Reference to VehicleController.suspensions as a readonly collection.
+    /// </summary>
+    private ReadOnlyCollection<Suspension> suspensions;
+
     // /// <summary>
     // /// Values that are consistent across all four wheels: restLength, 
     // /// springTravel, springStiffness, and damperStiffness.
@@ -62,15 +67,16 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         wheels = vehicleController.Wheels;
+        suspensions = vehicleController.Suspensions;
 
         rpmSlider.minValue = engine.IdleRpm;
         rpmSlider.maxValue = engine.MaxRpm;
 
         consistentWheelData.text =
-            $"restLength: {wheels[0].RestLength}\n" +
-            $"springTravel: {wheels[0].SpringTravel}\n" +
-            $"springStiffness: {wheels[0].SpringStiffness}\n" +
-            $"damperStiffness: {wheels[0].DamperStiffness}\n";
+            $"restLength: {suspensions[0].RestLength}\n" +
+            $"springTravel: {suspensions[0].SpringTravel}\n" +
+            $"springStiffness: {suspensions[0].SpringStiffness}\n" +
+            $"damperStiffness: {suspensions[0].DamperStiffness}\n";
     }
 
     // Update is called once per frame
@@ -78,7 +84,7 @@ public class UIManager : MonoBehaviour
     {
         computedWheelData.text = "";
 
-        foreach (Wheel wheel in wheels)
+        for (int i = 0; i < wheels.Count; i++)
         {
             computedWheelData.text +=
                 // $"{wheel.WheelPos} steerAngle: {wheel.SteerAngle}\n" +
@@ -87,14 +93,14 @@ public class UIManager : MonoBehaviour
                 // $"{wheel.WheelPos} springVelocity: {wheel.SpringVelocity}\n" +
                 // $"{wheel.WheelPos} damperForce: {wheel.DamperForce}\n" +
                 // $"{wheel.WheelPos} suspensionForce: {wheel.SuspensionForce}\n" +
-                $"{wheel.WheelPos} angularVelocity: {wheel.AngularVelocity}\n" +
-                $"{wheel.WheelPos} angularAcceleration: {wheel.AngularAcceleration}\n" +
-                $"{wheel.WheelPos} inertia: {wheel.inertia}\n" +
-                $"{wheel.WheelPos} maxAngularVelocity: {wheel.maxAngularVelocity}\n" +
-                $"{wheel.WheelPos} fX: {wheel.fX}\n" +
-                $"{wheel.WheelPos} fY: {wheel.fY}\n" +
-                $"{wheel.WheelPos} fZ: {wheel.fZ}\n" +
-                $"{wheel.WheelPos} driveTorque: {wheel.torque}\n" +
+                $"{wheels[i].WheelPos} angularVelocity: {wheels[i].AngularVelocity}\n" +
+                $"{wheels[i].WheelPos} angularAcceleration: {wheels[i].AngularAcceleration}\n" +
+                $"{wheels[i].WheelPos} inertia: {wheels[i].inertia}\n" +
+                $"{wheels[i].WheelPos} maxAngularVelocity: {wheels[i].maxAngularVelocity}\n" +
+                $"{wheels[i].WheelPos} fX: {wheels[i].fX}\n" +
+                $"{wheels[i].WheelPos} fY: {suspensions[i].fY}\n" +
+                $"{wheels[i].WheelPos} fZ: {wheels[i].fZ}\n" +
+                $"{wheels[i].WheelPos} driveTorque: {wheels[i].torque}\n" +
                 "\n";
         }
 

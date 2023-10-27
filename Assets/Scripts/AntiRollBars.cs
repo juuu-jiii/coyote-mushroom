@@ -5,10 +5,10 @@ public class AntiRollBars : MonoBehaviour
 {
     [SerializeField] private int antiRollBarStiffness;
     [SerializeField] private VehicleController vehicleController;
-    [SerializeField] private Wheel frontLeft;
-    [SerializeField] private Wheel frontRight;
-    [SerializeField] private Wheel rearLeft;
-    [SerializeField] private Wheel rearRight;
+    [SerializeField] private Suspension frontLeft;
+    [SerializeField] private Suspension frontRight;
+    [SerializeField] private Suspension rearLeft;
+    [SerializeField] private Suspension rearRight;
     [SerializeField] private Rigidbody vehicleRb;
 
     // Start is called before the first frame update

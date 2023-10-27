@@ -448,6 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 172892414}
   - component: {fileID: 172892415}
+  - component: {fileID: 172892416}
   m_Layer: 0
   m_Name: ScrWheelRL
   m_TagString: Untagged
@@ -484,12 +485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleRb: {fileID: 791669399}
-  restLength: 0.5
-  springTravel: 0.2
-  springStiffness: 30000
-  damperStiffness: 4000
-  minForce: -2000
-  maxForce: 6000
+  suspension: {fileID: 172892416}
   canSteer: 0
   wheelPos: 2
   radius: 0.33
@@ -505,8 +501,27 @@ MonoBehaviour:
   torque: 0
   inertia: 0
   fZ: 0
-  fY: 0
   fX: 0
+--- !u!114 &172892416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172892413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28447db275314404fb8fe5c223ce5c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  restLength: 0.5
+  springTravel: 0.2
+  springStiffness: 30000
+  damperStiffness: 4000
+  minForce: -2000
+  maxForce: 6000
+  wheel: {fileID: 172892415}
+  fY: 0
 --- !u!1 &233702698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2049,6 +2064,11 @@ MonoBehaviour:
   - {fileID: 1732856211}
   - {fileID: 172892415}
   - {fileID: 1833048566}
+  suspensions:
+  - {fileID: 2110926120}
+  - {fileID: 1732856212}
+  - {fileID: 172892416}
+  - {fileID: 1833048567}
   engine: {fileID: 791669402}
   gearbox: {fileID: 791669403}
   vehicleRb: {fileID: 791669399}
@@ -2189,7 +2209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 911bd20db13984c719b4c23264f2959f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  driveType: 0
+  driveType: 2
   engine: {fileID: 791669402}
   gearbox: {fileID: 791669403}
   vehicleController: {fileID: 791669401}
@@ -3583,6 +3603,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1732856210}
   - component: {fileID: 1732856211}
+  - component: {fileID: 1732856212}
   m_Layer: 0
   m_Name: ScrWheelFR
   m_TagString: Untagged
@@ -3619,12 +3640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleRb: {fileID: 791669399}
-  restLength: 0.5
-  springTravel: 0.2
-  springStiffness: 30000
-  damperStiffness: 4000
-  minForce: -2000
-  maxForce: 6000
+  suspension: {fileID: 1732856212}
   canSteer: 1
   wheelPos: 1
   radius: 0.33
@@ -3640,8 +3656,27 @@ MonoBehaviour:
   torque: 0
   inertia: 0
   fZ: 0
-  fY: 0
   fX: 0
+--- !u!114 &1732856212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732856209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28447db275314404fb8fe5c223ce5c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  restLength: 0.5
+  springTravel: 0.2
+  springStiffness: 30000
+  damperStiffness: 4000
+  minForce: -2000
+  maxForce: 6000
+  wheel: {fileID: 1732856211}
+  fY: 0
 --- !u!1 &1740553068
 GameObject:
   m_ObjectHideFlags: 0
@@ -3749,6 +3784,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1833048565}
   - component: {fileID: 1833048566}
+  - component: {fileID: 1833048567}
   m_Layer: 0
   m_Name: ScrWheelRR
   m_TagString: Untagged
@@ -3785,12 +3821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleRb: {fileID: 791669399}
-  restLength: 0.5
-  springTravel: 0.2
-  springStiffness: 30000
-  damperStiffness: 4000
-  minForce: -2000
-  maxForce: 6000
+  suspension: {fileID: 1833048567}
   canSteer: 0
   wheelPos: 3
   radius: 0.33
@@ -3806,8 +3837,27 @@ MonoBehaviour:
   torque: 0
   inertia: 0
   fZ: 0
-  fY: 0
   fX: 0
+--- !u!114 &1833048567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833048564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28447db275314404fb8fe5c223ce5c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  restLength: 0.5
+  springTravel: 0.2
+  springStiffness: 30000
+  damperStiffness: 4000
+  minForce: -2000
+  maxForce: 6000
+  wheel: {fileID: 1833048566}
+  fY: 0
 --- !u!1 &1850863790
 GameObject:
   m_ObjectHideFlags: 0
@@ -4261,6 +4311,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2110926118}
   - component: {fileID: 2110926119}
+  - component: {fileID: 2110926120}
   m_Layer: 0
   m_Name: ScrWheelFL
   m_TagString: Untagged
@@ -4297,12 +4348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleRb: {fileID: 791669399}
-  restLength: 0.5
-  springTravel: 0.2
-  springStiffness: 30000
-  damperStiffness: 4000
-  minForce: -2000
-  maxForce: 6000
+  suspension: {fileID: 2110926120}
   canSteer: 1
   wheelPos: 0
   radius: 0.33
@@ -4318,8 +4364,27 @@ MonoBehaviour:
   torque: 0
   inertia: 0
   fZ: 0
-  fY: 0
   fX: 0
+--- !u!114 &2110926120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2110926117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28447db275314404fb8fe5c223ce5c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  restLength: 0.5
+  springTravel: 0.2
+  springStiffness: 30000
+  damperStiffness: 4000
+  minForce: -2000
+  maxForce: 6000
+  wheel: {fileID: 2110926119}
+  fY: 0
 --- !u!23 &107872842195051921
 MeshRenderer:
   m_ObjectHideFlags: 0
