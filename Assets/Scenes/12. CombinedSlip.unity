@@ -2185,7 +2185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gearRatios:
-  - 3.446
+  - -3.446
   - 0
   - 3.794
   - 2.324
