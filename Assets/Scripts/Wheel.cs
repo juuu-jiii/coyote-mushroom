@@ -340,7 +340,6 @@ public class Wheel : MonoBehaviour
         #region Calculate wheel physics when the vehicle is on the ground.
         if (suspension.OnGround)
         {
-            Debug.Log("lat/longs");
             // ======================================================================================
             // ==================== LATERAL/LONGITUDINAL FORCE CALCULATIONS =========================
             // ======================================================================================
