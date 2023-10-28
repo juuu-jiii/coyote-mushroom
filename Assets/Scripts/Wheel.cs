@@ -228,7 +228,7 @@ public class Wheel : MonoBehaviour
         localLinearVelocityVector = transform.InverseTransformDirection(vehicleRb.GetPointVelocity(hit.point));
 
         // Using formula linear velocity = angular velocity * radius
-        linearVelocity = AngularAcceleration * radius;
+        linearVelocity = AngularVelocity * radius;
 
         // Calculate the longitudinal slip velocity of this wheel:
         // Get the difference between the wheel's linear velocity (computed 
