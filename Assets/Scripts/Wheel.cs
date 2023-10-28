@@ -196,6 +196,15 @@ public class Wheel : MonoBehaviour
     private float maxFriction;
 
     /// <summary>
+    /// Amount of torque acting in the opposite direction of longitudinal slip.
+    /// </summary>
+    public float frictionTorque;
+
+    public float angularAccelerationOfFriction;
+
+    private const float TorqueScale = -10f;
+
+    /// <summary>
     /// Calculates inertia of this wheel using the formula for a closed cylinder
     /// i.e., the closest approximation to the shape of a wheel. 
     /// (I = 0.5 * m * r ^ 2)
@@ -340,6 +349,18 @@ public class Wheel : MonoBehaviour
         #region Calculate wheel physics when the vehicle is on the ground.
         if (suspension.OnGround)
         {
+            frictionTorque = Mathf.Max(suspension.fY, 0f)
+                             * radius
+            //  * -longitudinalSlipVelocity;
+            * Mathf.Clamp(longitudinalSlipVelocity / TorqueScale, -1f, 1f);
+
+            angularAccelerationOfFriction = frictionTorque / inertia;
+
+            AngularVelocity += angularAccelerationOfFriction * Time.deltaTime;
+
+
+
+
             // ======================================================================================
             // ==================== LATERAL/LONGITUDINAL FORCE CALCULATIONS =========================
             // ======================================================================================
