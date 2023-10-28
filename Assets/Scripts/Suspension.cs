@@ -149,7 +149,6 @@ public class Suspension : MonoBehaviour
 
     void FixedUpdate()
     {
-        // TODO: move suspension logic into separate script
         #region Calculate suspension physics when the vehicle is on the ground.
         if (OnGround = Physics.Raycast(transform.position, -transform.up, out hit, maxLength + wheel.Radius))
         {
