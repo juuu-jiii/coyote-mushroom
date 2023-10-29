@@ -88,19 +88,34 @@ public class UIManager : MonoBehaviour
         {
             computedWheelData.text +=
                 // $"{wheel.WheelPos} steerAngle: {wheel.SteerAngle}\n" +
-                // $"{wheel.WheelPos} currSpringLength: {wheel.CurrSpringLength}\n" +
-                // $"{wheel.WheelPos} springForce: {wheel.SpringForce}\n" +
+                $"{wheels[i].WheelPos} currSpringLength: {suspensions[i].CurrSpringLength}\n" +
+                $"{wheels[i].WheelPos} springForce: {suspensions[i].SpringForce}\n" +
                 // $"{wheel.WheelPos} springVelocity: {wheel.SpringVelocity}\n" +
-                // $"{wheel.WheelPos} damperForce: {wheel.DamperForce}\n" +
+                $"{wheels[i].WheelPos} damperForce: {suspensions[i].DamperForce}\n" +
                 // $"{wheel.WheelPos} suspensionForce: {wheel.SuspensionForce}\n" +
-                $"{wheels[i].WheelPos} angularVelocity: {wheels[i].AngularVelocity}\n" +
-                $"{wheels[i].WheelPos} angularAcceleration: {wheels[i].AngularAcceleration}\n" +
-                $"{wheels[i].WheelPos} inertia: {wheels[i].inertia}\n" +
-                $"{wheels[i].WheelPos} maxAngularVelocity: {wheels[i].maxAngularVelocity}\n" +
-                $"{wheels[i].WheelPos} fX: {wheels[i].fX}\n" +
+                // $"{wheels[i].WheelPos} angularVelocity: {wheels[i].AngularVelocity}\n" +
+                // $"{wheels[i].WheelPos} angularAcceleration: {wheels[i].AngularAcceleration}\n" +
+                // $"{wheels[i].WheelPos} inertia: {wheels[i].inertia}\n" +
+
+                // $"{wheels[i].WheelPos} maxAngularVelocity: {wheels[i].maxAngularVelocity}\n" +
+
+                // $"{wheels[i].WheelPos} fX: {wheels[i].fX}\n" +
                 $"{wheels[i].WheelPos} fY: {suspensions[i].fY}\n" +
-                $"{wheels[i].WheelPos} fZ: {wheels[i].fZ}\n" +
-                $"{wheels[i].WheelPos} driveTorque: {wheels[i].torque}\n" +
+                // $"{wheels[i].WheelPos} fZ: {wheels[i].fZ}\n" +
+
+                // $"{wheels[i].WheelPos} lat slip norm: {wheels[i].lateralSlipNormalised}\n" +
+                // $"{wheels[i].WheelPos} long slip norm: {wheels[i].longitudinalSlipNormalised}\n" +
+                // $"{wheels[i].WheelPos} max friction: {wheels[i].maxFriction}\n" +
+                // $"{wheels[i].WheelPos} longitudinal slip velocity: {wheels[i].longitudinalSlipVelocity}\n" +
+                // $"{wheels[i].WheelPos} friction torque: {wheels[i].frictionTorque}\n" +
+                // $"{wheels[i].WheelPos} angular accel of friction: {wheels[i].angularAccelerationOfFriction}\n" +
+                // $"{wheels[i].WheelPos} traction/friction: {wheels[i].tractionOrFriction}\n" +
+                // $"{wheels[i].WheelPos} angular acceleration: {wheels[i].AngularAcceleration}\n" +
+                // $"{wheels[i].WheelPos} angular velocity: {wheels[i].AngularVelocity}\n" +
+                // $"{wheels[i].WheelPos} local linear velocity Z: {wheels[i].localLinearVelocityVector.z}\n" +
+                // $"{wheels[i].WheelPos} linear velocity: {wheels[i].linearVelocity}\n" +
+
+                // $"{wheels[i].WheelPos} driveTorque: {wheels[i].torque}\n" +
                 "\n";
         }
 
