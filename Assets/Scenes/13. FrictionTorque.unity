@@ -447,8 +447,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 172892414}
-  - component: {fileID: 172892415}
   - component: {fileID: 172892416}
+  - component: {fileID: 172892415}
   m_Layer: 0
   m_Name: ScrWheelRL
   m_TagString: Untagged
@@ -497,11 +497,21 @@ MonoBehaviour:
   tyreForceCurve: {fileID: 791669405}
   engine: {fileID: 791669402}
   gearbox: {fileID: 791669403}
+  localLinearVelocityVector: {x: 0, y: 0, z: 0}
+  linearVelocity: 0
   maxAngularVelocity: 0
   torque: 0
   inertia: 0
   fZ: 0
   fX: 0
+  longitudinalSlipVelocity: 0
+  lateralSlipNormalised: 0
+  longitudinalSlipNormalised: 0
+  tyreForceNormalised: {x: 0, y: 0}
+  maxFriction: 0
+  frictionTorque: 0
+  angularAccelerationOfFriction: 0
+  tractionOrFriction: 
 --- !u!114 &172892416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3602,8 +3612,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1732856210}
-  - component: {fileID: 1732856211}
   - component: {fileID: 1732856212}
+  - component: {fileID: 1732856211}
   m_Layer: 0
   m_Name: ScrWheelFR
   m_TagString: Untagged
@@ -3652,11 +3662,21 @@ MonoBehaviour:
   tyreForceCurve: {fileID: 791669405}
   engine: {fileID: 791669402}
   gearbox: {fileID: 791669403}
+  localLinearVelocityVector: {x: 0, y: 0, z: 0}
+  linearVelocity: 0
   maxAngularVelocity: 0
   torque: 0
   inertia: 0
   fZ: 0
   fX: 0
+  longitudinalSlipVelocity: 0
+  lateralSlipNormalised: 0
+  longitudinalSlipNormalised: 0
+  tyreForceNormalised: {x: 0, y: 0}
+  maxFriction: 0
+  frictionTorque: 0
+  angularAccelerationOfFriction: 0
+  tractionOrFriction: 
 --- !u!114 &1732856212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3783,8 +3803,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1833048565}
-  - component: {fileID: 1833048566}
   - component: {fileID: 1833048567}
+  - component: {fileID: 1833048566}
   m_Layer: 0
   m_Name: ScrWheelRR
   m_TagString: Untagged
@@ -3833,11 +3853,21 @@ MonoBehaviour:
   tyreForceCurve: {fileID: 791669405}
   engine: {fileID: 791669402}
   gearbox: {fileID: 791669403}
+  localLinearVelocityVector: {x: 0, y: 0, z: 0}
+  linearVelocity: 0
   maxAngularVelocity: 0
   torque: 0
   inertia: 0
   fZ: 0
   fX: 0
+  longitudinalSlipVelocity: 0
+  lateralSlipNormalised: 0
+  longitudinalSlipNormalised: 0
+  tyreForceNormalised: {x: 0, y: 0}
+  maxFriction: 0
+  frictionTorque: 0
+  angularAccelerationOfFriction: 0
+  tractionOrFriction: 
 --- !u!114 &1833048567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4310,8 +4340,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2110926118}
-  - component: {fileID: 2110926119}
   - component: {fileID: 2110926120}
+  - component: {fileID: 2110926119}
   m_Layer: 0
   m_Name: ScrWheelFL
   m_TagString: Untagged
@@ -4360,11 +4390,21 @@ MonoBehaviour:
   tyreForceCurve: {fileID: 791669405}
   engine: {fileID: 791669402}
   gearbox: {fileID: 791669403}
+  localLinearVelocityVector: {x: 0, y: 0, z: 0}
+  linearVelocity: 0
   maxAngularVelocity: 0
   torque: 0
   inertia: 0
   fZ: 0
   fX: 0
+  longitudinalSlipVelocity: 0
+  lateralSlipNormalised: 0
+  longitudinalSlipNormalised: 0
+  tyreForceNormalised: {x: 0, y: 0}
+  maxFriction: 0
+  frictionTorque: 0
+  angularAccelerationOfFriction: 0
+  tractionOrFriction: 
 --- !u!114 &2110926120
 MonoBehaviour:
   m_ObjectHideFlags: 0
