@@ -388,6 +388,8 @@ public class Wheel : MonoBehaviour
             {
                 tractionOrFriction = "traction";
                 traction = torque / radius;
+
+                // TODO: consider clamping in range [-1, 1] instead to prevent the car from veering in one direction at high speeds.
                 longitudinalSlipNormalised = Mathf.Clamp(traction / Mathf.Max(suspension.fY, 0.0000001f), -2f, 2f);
             }
             // Otherwise, the wheel's linear velocity and longitudinal slip
@@ -395,11 +397,14 @@ public class Wheel : MonoBehaviour
             // calculations.
             else
             {
-                longitudinalSlipNormalised = Mathf.Clamp(
-                    longitudinalSlipVelocity * longitudinalStiffness,
-                    -2f,
-                    2f);
+                // TODO: jump between traction and friction is very jarring, acting like a braking force. See if it's possible to blend between both values once the switch occurs.
+                // TODO: alternatively, since this is determined by a conditional, see if it's possible to "lerp" the effects:
+                // - if localLinearVelocityVector.z * longitudinalSlipVelocity is +ve AND above some predetermined threshold (you can set this value yourself), multiply longSlipNorm by 1, else blend between 0 and 1
+                // - use the same logic for friction calcs i.e., when the product is -ve
                 tractionOrFriction = "friction";
+
+                // TODO: consider clamping in range [-1, 1] so friction is not so extreme
+                longitudinalSlipNormalised = Mathf.Clamp(longitudinalSlipVelocity * longitudinalStiffness, -1f, 1f);
             }
 
 
