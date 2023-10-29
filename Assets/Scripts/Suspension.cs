@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Logic determining suspension behaviour.
+/// All initialisation/update/fixedUpdate methods called from Wheel class.
+/// This is so suspension calculations are done before tyre calculations.
+/// </summary>
 public class Suspension : MonoBehaviour
 {
     [Tooltip("The length of the spring at rest.")]
@@ -101,8 +106,7 @@ public class Suspension : MonoBehaviour
 
     public RaycastHit GroundHit => hit;
 
-    // Start is called before the first frame update
-    void Start()
+    public void InitSuspension()
     {
         // Range of values for spring length is restLength +- springTravel.
         minLength = restLength - springTravel;
@@ -111,8 +115,7 @@ public class Suspension : MonoBehaviour
         wheelMesh = wheel.WheelMesh;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateSuspension()
     {
         // Update the wheel mesh's position based on the length of the suspension.
         // The value of y increases as we go upwards, and decreases as we go downwards.
@@ -147,7 +150,7 @@ public class Suspension : MonoBehaviour
         #endregion;
     }
 
-    void FixedUpdate()
+    public void FixedUpdateSuspension()
     {
         #region Calculate suspension physics when the vehicle is on the ground.
         if (OnGround = Physics.Raycast(transform.position, -transform.up, out hit, maxLength + wheel.Radius))

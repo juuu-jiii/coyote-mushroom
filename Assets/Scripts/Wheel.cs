@@ -13,7 +13,7 @@ public enum WheelPosition
 }
 
 /// <summary>
-/// This is where logic determining wheel and suspension behaviour is written.
+/// This is where logic determining wheel behaviour is written.
 /// </summary>
 public class Wheel : MonoBehaviour
 {
@@ -240,6 +240,8 @@ public class Wheel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        suspension.InitSuspension();
+
         AngularVelocity = 0;
         CalculateInertia();
     }
@@ -294,6 +296,8 @@ public class Wheel : MonoBehaviour
             transform.localRotation.y + wheelAngle,
             transform.localRotation.z);
 
+        suspension.UpdateSuspension();
+
         // Calculate the wheel's local angular velocity.
         // AngularVelocity = localLinearVelocity.z / radius;
 
@@ -322,6 +326,8 @@ public class Wheel : MonoBehaviour
     // Perform physics calculations here.
     void FixedUpdate()
     {
+        suspension.FixedUpdateSuspension();
+
         #region Calculate wheel angular acceleration and velocity
         AngularAcceleration = torque / inertia;
         AngularVelocity += AngularAcceleration * Time.deltaTime;
