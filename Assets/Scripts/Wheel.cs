@@ -356,11 +356,38 @@ public class Wheel : MonoBehaviour
         #region Calculate wheel physics when the vehicle is on the ground.
         if (suspension.OnGround)
         {
+            // Using equation frictionTorque = maxFriction * radius
+            // where maxFriction = upwards force * radius
+            // frictionTorque = Mathf.Max(suspension.fY, 0f)
+            //                  * radius
+            //                  * -longitudinalSlipVelocity; // invert sign of long slip because the reaction force (i.e., friction torque) acts in the OPPOSITE direction of tyre force
+
+            // However, the above implementation results in a "pendulum" effect, 
+            // where (even at a standstill) the wheels rotate in one direction, 
+            // before proceeding to rotate in the other. Merely inverting 
+            // longitudinalSlipVelocity causes the calculated value of 
+            // frictionTorque to become very sensitive to changes in 
+            // longitudinalSlipVelocity (and applying excessive acceleration to the wheel). 
+            // This will lead to the wheel not being able to equalise with the 
+            // speed of the ground beneath it, causing it to rotate faster, then 
+            // slower, then faster (in the opposite direction) repeatedly.
+            //
+            // Although oscillations in the resultant force do occur in reality, 
+            // it happens at such a minuscule amount that it is unperceivable to
+            // the eye.
+            // 
+            // To solve this problem, scale the inverted value of 
+            // longitudinalSlipVelocity down by a coefficient and clamp it in 
+            // the range [-1, 1] to obtain a linear function. By multiplying
+            // frictionTorque with this coefficient, we ensure that the extreme
+            // values of -1 and 1 are only obtained at very large/small values 
+            // of longitudinalSlipVelocity. This prevents the oscillations from 
+            // becoming unrealistic.
             frictionTorque = Mathf.Max(suspension.fY, 0f)
                              * radius
-            //  * -longitudinalSlipVelocity;
-            * Mathf.Clamp(longitudinalSlipVelocity / TorqueScale, -1f, 1f);
+                             * Mathf.Clamp(longitudinalSlipVelocity / TorqueScale, -1f, 1f);
 
+            // Using formula angularAcceleration = torque / inertia
             angularAccelerationOfFriction = frictionTorque / inertia;
 
             AngularVelocity += angularAccelerationOfFriction * Time.deltaTime;
