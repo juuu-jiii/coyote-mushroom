@@ -15,11 +15,12 @@ public class Gearbox : MonoBehaviour
     [SerializeField] private float shiftTime;
     [Tooltip("Names of all the gears for this vehicle.")]
     public char[] gears;
+    public const int NEUTRAL_GEAR = 1;
 
     /// <summary>
     /// The gear this vehicle is currently in.
     /// </summary>
-    public int CurrentGear { get; private set; } = 1;
+    public int CurrentGear { get; private set; } = NEUTRAL_GEAR;
 
     /// <summary>
     /// The target gear as a result of an up or down shift action.
@@ -67,7 +68,7 @@ public class Gearbox : MonoBehaviour
 
         // Gear is in N while in the midst of shifting.
         // Since neutral gear has a ratio of 0, totalGearRatio = 0.
-        CurrentGear = 1;
+        CurrentGear = NEUTRAL_GEAR;
         TotalGearRatio = 0;
 
         return true;

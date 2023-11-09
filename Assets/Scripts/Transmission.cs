@@ -47,6 +47,77 @@ public class Transmission : MonoBehaviour
     /// </summary>
     private ReadOnlyCollection<Wheel> wheels;
 
+    private float averageDriveAxleAngularVelocity;
+    private float gearboxSideClutchAngularVelocity;
+    private float clutchAngularVelocityDifference;
+    public float clutchCoefficient;
+
+    /// <summary>
+    /// Computes the angular velocity of the drive axle(s) as the average velocities of all driven wheels.
+    /// </summary>
+    private void CalculateDriveAxleAngularVelocity()
+    {
+        switch (driveType)
+        {
+            case DriveType.FWD:
+                averageDriveAxleAngularVelocity =
+                    (wheels[0].AngularVelocity
+                    + wheels[1].AngularVelocity)
+                    * 0.5f;
+                break;
+            case DriveType.RWD:
+                averageDriveAxleAngularVelocity =
+                    (wheels[2].AngularVelocity
+                    + wheels[3].AngularVelocity)
+                    * 0.5f;
+                break;
+            case DriveType.AWD:
+                averageDriveAxleAngularVelocity =
+                    (wheels[0].AngularVelocity
+                    + wheels[1].AngularVelocity
+                    + wheels[2].AngularVelocity
+                    + wheels[3].AngularVelocity)
+                    * 0.25f;
+                break;
+
+        }
+    }
+
+    private void CalculateGearboxSideClutchAngularVelocity()
+    {
+        gearboxSideClutchAngularVelocity = averageDriveAxleAngularVelocity * gearbox.TotalGearRatio;
+    }
+
+    private void CalculateClutchCoefficient()
+    {
+        // clutchCoefficient = 0.3f;
+    }
+
+    private void AccelerateOrBrakeEngine()
+    {
+        CalculateDriveAxleAngularVelocity();
+        CalculateGearboxSideClutchAngularVelocity();
+        CalculateClutchCoefficient();
+
+        // TODO: move constants into a math utils class
+        // TODO: need to start looking into what order the various scripts and components need to be updated in within fixedUpdate
+        // If gear is currently in neutral, wheels can neither accelerate nor brake engine.
+        if (gearbox.CurrentGear != Gearbox.NEUTRAL_GEAR)
+        {
+            // Get the angular velocity difference between the clutch on the engine side vs the clutch on the gearbox
+            // side. The clutch on the engine side rotates at the same rate as the engine, so its angular velocity is
+            // equal to that of the engine's.
+            clutchAngularVelocityDifference = gearboxSideClutchAngularVelocity - engine.AngularVelocity;
+
+            // Calculate how much the wheels accelerate or brake the engine, but don't let the result cause the RPM
+            // to rise above its maximum or dip below its minimum.
+            engine.AngularVelocity = Mathf.Clamp(
+                engine.AngularVelocity + clutchCoefficient * clutchAngularVelocityDifference,
+                engine.IdleRpm * Engine.RPM_TO_RAD_PER_SEC,
+                engine.MaxRpm * Engine.RPM_TO_RAD_PER_SEC);
+        }
+    }
+
     /// <summary>
     /// Performs torque calculations for each set of wheels.
     /// </summary>
@@ -94,6 +165,8 @@ public class Transmission : MonoBehaviour
 
     void FixedUpdate()
     {
+        Debug.Log("transmission fixedUpdate");
         CalculateWheelDriveTorque();
+        AccelerateOrBrakeEngine();
     }
 }

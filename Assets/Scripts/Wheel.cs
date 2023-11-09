@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -327,6 +326,7 @@ public class Wheel : MonoBehaviour
     // Perform physics calculations here.
     void FixedUpdate()
     {
+        Debug.Log("wheel fixedUpdate");
         suspension.FixedUpdateSuspension();
 
         #region Calculate wheel angular acceleration and velocity

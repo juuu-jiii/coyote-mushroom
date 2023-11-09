@@ -54,17 +54,17 @@ public class Engine : MonoBehaviour
     /// <summary>
     /// The current angular velocity of the engine.
     /// </summary>
-    public float AngularVelocity { get; private set; }
+    public float AngularVelocity { get; set; }
 
     /// <summary>
     /// Conversion constant for moving between rpm and rad/s.
     /// </summary>
-    private const float RpmToRadPerSec = Mathf.PI * 2 / 60;
+    public const float RPM_TO_RAD_PER_SEC = Mathf.PI * 2f / 60f;
 
     /// <summary>
     /// Conversion constant for moving between rad/s and rpm.
     /// </summary>
-    private const float RadPerSecToRpm = 1 / RpmToRadPerSec;
+    public const float RAD_PER_SEC_TO_RPM = 1f / RPM_TO_RAD_PER_SEC;
 
     /// <summary>
     /// Simple method of approximating engine RPM. Ignores angular acceleration/velocity.
@@ -163,13 +163,13 @@ public class Engine : MonoBehaviour
         // revs from going out of range.
         AngularVelocity = Mathf.Clamp(
             AngularVelocity + AngularAcceleration * Time.deltaTime,
-            idleRpm * RpmToRadPerSec,
-            maxRpm * RpmToRadPerSec
+            idleRpm * RPM_TO_RAD_PER_SEC,
+            maxRpm * RPM_TO_RAD_PER_SEC
         );
 
         // angularVelocity stores the RPM of the engine in rad/s. Multiply by
         // RadPerSecToRpm to convert to the correct units.
-        CurrentRpm = AngularVelocity * RadPerSecToRpm;
+        CurrentRpm = AngularVelocity * RAD_PER_SEC_TO_RPM;
     }
 
     // Start is called before the first frame update
@@ -181,6 +181,7 @@ public class Engine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("engine fixedUpdate");
         // Debug.Log(Mathf.InverseLerp(100, 0, 47));
         // Debug.Log(CurrentRpm + Mathf.Lerp(
         //         -3000 * Time.deltaTime,
