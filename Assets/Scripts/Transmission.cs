@@ -51,6 +51,10 @@ public class Transmission : MonoBehaviour
     private float gearboxSideClutchAngularVelocity;
     private float clutchAngularVelocityDifference;
     public float clutchCoefficient;
+    public float clutchCoefficientMin;
+    public float clutchCoefficientMax;
+    public Rigidbody vehicleRb;
+    public ClutchCoefficientLerpCurve clutchCoefficientLerpCurve;
 
     /// <summary>
     /// Computes the angular velocity of the drive axle(s) as the average velocities of all driven wheels.
@@ -91,6 +95,13 @@ public class Transmission : MonoBehaviour
     private void CalculateClutchCoefficient()
     {
         // clutchCoefficient = 0.3f;
+
+        // float t = Mathf.Abs(Vector3.Dot(transform.forward, vehicleRb.velocity.normalized));
+        // clutchCoefficient = Mathf.Lerp(clutchCoefficientMin, clutchCoefficientMax, t);
+
+        float velocityDotDirection = Mathf.Abs(Vector3.Dot(transform.forward, vehicleRb.velocity.normalized));
+        float t = clutchCoefficientLerpCurve.curve.Evaluate(velocityDotDirection);
+        clutchCoefficient = Mathf.Lerp(clutchCoefficientMin, clutchCoefficientMax, t);
     }
 
     private void AccelerateOrBrakeEngine()

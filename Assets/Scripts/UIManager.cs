@@ -19,6 +19,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Slider rpmSlider;
     [Tooltip("The TMPro text object to log computed values for the vehicle's current gear.")]
     [SerializeField] private TextMeshProUGUI currentGear;
+    [Tooltip("The TMPro text object to log computed values for the vehicle's clutch coefficient.")]
+    [SerializeField] private TextMeshProUGUI clutCoeff;
 
     [Header("Vehicle")]
     [Tooltip("The VehicleController GameObject associated with the vehicle whose data is to be logged to the screen.")]
@@ -28,6 +30,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Engine engine;
     [Tooltip("This vehicle's gearbox script.")]
     [SerializeField] private Gearbox gearbox;
+
+    [Tooltip("This vehicle's transmission script.")]
+    [SerializeField] private Transmission transmission;
 
     /// <summary>
     /// Reference to VehicleController.wheels as a readonly collection.
@@ -126,5 +131,7 @@ public class UIManager : MonoBehaviour
         currentGear.text = $"Current Gear: {gearbox.gears[gearbox.CurrentGear]}";
 
         rpmSlider.value = engine.CurrentRpm;
+
+        clutCoeff.text = $"ClutCoeff = {transmission.clutchCoefficient.ToString()}";
     }
 }
