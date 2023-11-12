@@ -112,7 +112,7 @@ public class Engine : MonoBehaviour
     /// A more detailed implementation of RPM and torque calculations, 
     /// accounting for values the "simpler" methods ignore.
     /// </summary>
-    void CalculateTorqueAndRpmComplex()
+    public void CalculateTorqueAndRpmComplex()
     {
         // Evaluate the current torque from the torque curve based on 
         // CurrentRpm and ThrottleInput.
@@ -181,7 +181,7 @@ public class Engine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("engine fixedUpdate");
+        // Debug.Log("engine fixedUpdate");
         // Debug.Log(Mathf.InverseLerp(100, 0, 47));
         // Debug.Log(CurrentRpm + Mathf.Lerp(
         //         -3000 * Time.deltaTime,
@@ -193,6 +193,6 @@ public class Engine : MonoBehaviour
 
         // CurrentTorque = CalculateTorqueSimple();
 
-        CalculateTorqueAndRpmComplex();
+        // CalculateTorqueAndRpmComplex();
     }
 }

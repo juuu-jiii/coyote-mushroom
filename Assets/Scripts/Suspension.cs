@@ -106,7 +106,7 @@ public class Suspension : MonoBehaviour
 
     public RaycastHit GroundHit => hit;
 
-    public void InitSuspension()
+    public void Init()
     {
         // Range of values for spring length is restLength +- springTravel.
         minLength = restLength - springTravel;
@@ -115,7 +115,7 @@ public class Suspension : MonoBehaviour
         wheelMesh = wheel.WheelMesh;
     }
 
-    public void UpdateSuspension()
+    public void UpdateWheelPosition()
     {
         // Update the wheel mesh's position based on the length of the suspension.
         // The value of y increases as we go upwards, and decreases as we go downwards.
@@ -150,46 +150,69 @@ public class Suspension : MonoBehaviour
         #endregion;
     }
 
-    public void FixedUpdateSuspension()
+    private void DetermineIfOnGround()
+    {
+        OnGround = Physics.Raycast(transform.position, -transform.up, out hit, maxLength + wheel.Radius);
+    }
+
+    private void CalculateLengthOnGround()
+    {
+        // ======================================================================================
+        // ============================ SUSPENSION CALCULATIONS =================================
+        // ======================================================================================
+        // Store the length of the spring during the previous frame.
+        prevSpringLength = CurrSpringLength;
+
+        // wheelRadius is a constant that has been set in the Inspector.
+        // hit.distance = hit.point - raycast origin
+        CurrSpringLength = hit.distance - wheel.Radius;
+
+        // Do not let the spring length exceed minLength or maxLength.
+        CurrSpringLength = Mathf.Clamp(CurrSpringLength, minLength, maxLength);
+    }
+
+    private void CalculateLengthInAir()
+    {
+        CurrSpringLength = maxLength;
+    }
+
+    private void CalculateForce()
+    {
+        // Measure the change in the spring's length over a fixed duration. 
+        // In this case, the duration is the time between this frame and the last.
+        // Use fixedDeltaTime since physics calculations are taking place in FixedUpdate.
+        SpringVelocity = (prevSpringLength - CurrSpringLength) / Time.fixedDeltaTime;
+
+        // Apply formulae to calculate spring and damper forces.
+        SpringForce = Mathf.Clamp(springStiffness * (restLength - CurrSpringLength), minForce, maxForce);
+        DamperForce = damperStiffness * SpringVelocity;
+        fY = SpringForce + DamperForce;
+
+        // Add spring and damper forces together to obtain a resultant force
+        // for the spring this frame.
+        // The raycast is pointing downwards, but the resultant force acts
+        // upwards to push the vehicle off the ground. Hence, multiply 
+        // springForce by transform.up to ensure the force points upwards.
+        SuspensionForce = fY * transform.up;
+    }
+
+    public void FixedUpdatePhysics()
     {
         #region Calculate suspension physics when the vehicle is on the ground.
-        if (OnGround = Physics.Raycast(transform.position, -transform.up, out hit, maxLength + wheel.Radius))
+        DetermineIfOnGround();
+
+        if (OnGround)
         {
-            // ======================================================================================
-            // ============================ SUSPENSION CALCULATIONS =================================
-            // ======================================================================================
-            // Store the length of the spring during the previous frame.
-            prevSpringLength = CurrSpringLength;
-
-            // wheelRadius is a constant that has been set in the Inspector.
-            // hit.distance = hit.point - raycast origin
-            CurrSpringLength = hit.distance - wheel.Radius;
-
-            // Do not let the spring length exceed minLength or maxLength.
-            CurrSpringLength = Mathf.Clamp(CurrSpringLength, minLength, maxLength);
-
-            // Measure the change in the spring's length over a fixed duration. 
-            // In this case, the duration is the time between this frame and the last.
-            // Use fixedDeltaTime since physics calculations are taking place in FixedUpdate.
-            SpringVelocity = (prevSpringLength - CurrSpringLength) / Time.fixedDeltaTime;
-
-            // Apply formulae to calculate spring and damper forces.
-            SpringForce = Mathf.Clamp(springStiffness * (restLength - CurrSpringLength), minForce, maxForce);
-            DamperForce = damperStiffness * SpringVelocity;
-            fY = SpringForce + DamperForce;
-
-            // Add spring and damper forces together to obtain a resultant force
-            // for the spring this frame.
-            // The raycast is pointing downwards, but the resultant force acts
-            // upwards to push the vehicle off the ground. Hence, multiply 
-            // springForce by transform.up to ensure the force points upwards.
-            SuspensionForce = fY * transform.up;
+            CalculateLengthOnGround();
+            CalculateForce();
         }
         // Otherwise, the vehicle is airborne. Max out suspension length.
         else
         {
-            CurrSpringLength = maxLength;
+            CalculateLengthInAir();
         }
         #endregion
+
+        // SetWheelPosition();
     }
 }

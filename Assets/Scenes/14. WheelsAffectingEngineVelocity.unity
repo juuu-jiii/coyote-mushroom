@@ -2148,6 +2148,7 @@ GameObject:
   m_Component:
   - component: {fileID: 791669400}
   - component: {fileID: 791669399}
+  - component: {fileID: 791669407}
   - component: {fileID: 791669401}
   - component: {fileID: 791669402}
   - component: {fileID: 791669403}
@@ -2467,6 +2468,31 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &791669407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791669398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 471e42e99a6d8451e8cbf1f9211b74f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engine: {fileID: 791669402}
+  suspension:
+  - {fileID: 2110926120}
+  - {fileID: 1732856212}
+  - {fileID: 172892416}
+  - {fileID: 1833048567}
+  transmission: {fileID: 791669404}
+  wheels:
+  - {fileID: 2110926119}
+  - {fileID: 1732856211}
+  - {fileID: 172892415}
+  - {fileID: 1833048566}
+  vehicleRb: {fileID: 791669399}
 --- !u!1 &815108029
 GameObject:
   m_ObjectHideFlags: 0

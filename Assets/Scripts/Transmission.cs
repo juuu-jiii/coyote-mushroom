@@ -59,7 +59,7 @@ public class Transmission : MonoBehaviour
     /// <summary>
     /// Computes the angular velocity of the drive axle(s) as the average velocities of all driven wheels.
     /// </summary>
-    private void CalculateDriveAxleAngularVelocity()
+    public void CalculateDriveAxleAngularVelocity()
     {
         switch (driveType)
         {
@@ -104,9 +104,9 @@ public class Transmission : MonoBehaviour
         clutchCoefficient = Mathf.Lerp(clutchCoefficientMin, clutchCoefficientMax, t);
     }
 
-    private void AccelerateOrBrakeEngine()
+    public void AccelerateOrBrakeEngine()
     {
-        CalculateDriveAxleAngularVelocity();
+        // CalculateDriveAxleAngularVelocity(); TODO: run this outside
         CalculateGearboxSideClutchAngularVelocity();
         CalculateClutchCoefficient();
 
@@ -132,7 +132,7 @@ public class Transmission : MonoBehaviour
     /// <summary>
     /// Performs torque calculations for each set of wheels.
     /// </summary>
-    private void CalculateWheelDriveTorque()
+    public void CalculateWheelDriveTorque()
     {
         // The torque available at a wheel depends primarily on the engine's torque, the product of the current drive
         // ratio and the final drive ratio. However, we must also account for the vehicle's drivetrain layout and the
@@ -148,8 +148,7 @@ public class Transmission : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Init()
     {
         wheels = vehicleController.Wheels;
 
@@ -174,10 +173,36 @@ public class Transmission : MonoBehaviour
         }
     }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        // wheels = vehicleController.Wheels;
+
+        // // Assign torque ratios to each set of wheels depending on the drivetrain layout of the vehicle.
+        // switch (driveType)
+        // {
+        //     case DriveType.FWD:
+        //         // All power gets delivered to the front wheels.
+        //         torqueRatio[0] = 1;
+        //         torqueRatio[1] = 0;
+        //         break;
+        //     case DriveType.RWD:
+        //         // All power gets delivered to the rear wheels.
+        //         torqueRatio[0] = 0;
+        //         torqueRatio[1] = 1;
+        //         break;
+        //     case DriveType.AWD:
+        //         // All power gets delivered to the front wheels.
+        //         torqueRatio[0] = torqueBias;
+        //         torqueRatio[1] = 1 - torqueBias;
+        //         break;
+        // }
+    }
+
     void FixedUpdate()
     {
-        Debug.Log("transmission fixedUpdate");
-        CalculateWheelDriveTorque();
-        AccelerateOrBrakeEngine();
+        // Debug.Log("transmission fixedUpdate");
+        // CalculateWheelDriveTorque();
+        // AccelerateOrBrakeEngine();
     }
 }
