@@ -11,18 +11,21 @@ public class VehicleManager : MonoBehaviour
 
     private void ApplyForceToRigidbody(Suspension suspension, Wheel wheel)
     {
-        // Add the force calculated above to the rigidbody.
-        // vehicleRb.AddForce(force) is incorrect - it applies a 
-        // force at the centre of gravity of the vehicle.
-        // The force should instead be applied where the wheel is.
-        // Recall that this script is applied on a per-wheel basis, and so
-        // for a regular vehicle it runs for a total of four wheels. The 
-        // following line of code achieves this effect for THIS wheel, by
-        // applying suspensionForce at hit.point (the location which the 
-        // raycast hits the ground).
-        vehicleRb.AddForceAtPosition(
-            suspension.SuspensionForce + wheel.fZ * transform.forward + wheel.fX * transform.right,
-            suspension.GroundHit.point);
+        if (suspension.OnGround)
+        {
+            // Add the force calculated above to the rigidbody.
+            // vehicleRb.AddForce(force) is incorrect - it applies a 
+            // force at the centre of gravity of the vehicle.
+            // The force should instead be applied where the wheel is.
+            // Recall that this script is applied on a per-wheel basis, and so
+            // for a regular vehicle it runs for a total of four wheels. The 
+            // following line of code achieves this effect for THIS wheel, by
+            // applying suspensionForce at hit.point (the location which the 
+            // raycast hits the ground).
+            vehicleRb.AddForceAtPosition(
+                suspension.SuspensionForce + wheel.fZ * transform.forward + wheel.fX * transform.right,
+                suspension.GroundHit.point);
+        }
     }
 
     // Start is called before the first frame update
