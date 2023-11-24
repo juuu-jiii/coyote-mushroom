@@ -132,6 +132,6 @@ public class UIManager : MonoBehaviour
 
         rpmSlider.value = engine.CurrentRpm;
 
-        clutCoeff.text = $"ClutCoeff = {transmission.clutchCoefficient.ToString()}";
+        clutCoeff.text = $"ClutCoeff = {transmission.ClutchCoefficient.ToString()}";
     }
 }

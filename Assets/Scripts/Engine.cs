@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -72,7 +70,7 @@ public class Engine : MonoBehaviour
     /// <returns>
     /// Approximation of engine RPM.
     /// </returns>
-    float CalculateRpmSimple()
+    private float CalculateRpmSimple()
     {
         // Evaluate how much RPM to add to/subtract from CurrentRpm based on
         // ThrottleInput. Clamp the value so it never exceeds the range 
@@ -103,7 +101,7 @@ public class Engine : MonoBehaviour
     /// <returns>
     /// The current engine torque.
     /// </returns>
-    float CalculateTorqueSimple()
+    private float CalculateTorqueSimple()
     {
         return torqueCurve.Evaluate(CurrentRpm) * ThrottleInput;
     }
@@ -170,29 +168,5 @@ public class Engine : MonoBehaviour
         // angularVelocity stores the RPM of the engine in rad/s. Multiply by
         // RadPerSecToRpm to convert to the correct units.
         CurrentRpm = AngularVelocity * RAD_PER_SEC_TO_RPM;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // Debug.Log("engine fixedUpdate");
-        // Debug.Log(Mathf.InverseLerp(100, 0, 47));
-        // Debug.Log(CurrentRpm + Mathf.Lerp(
-        //         -3000 * Time.deltaTime,
-        //         5000 * Time.deltaTime,
-        //         ThrottleInput
-        //     ));
-
-        // CurrentRpm = CalculateRpmSimple();
-
-        // CurrentTorque = CalculateTorqueSimple();
-
-        // CalculateTorqueAndRpmComplex();
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -104,8 +102,14 @@ public class Suspension : MonoBehaviour
     /// </summary>
     private RaycastHit hit;
 
+    /// <summary>
+    /// Public getter for the hit data returned from the suspension raycast.
+    /// </summary>
     public RaycastHit GroundHit => hit;
 
+    /// <summary>
+    /// Initialises suspension for this vehicle.
+    /// </summary>
     public void Init()
     {
         // Range of values for spring length is restLength +- springTravel.
@@ -115,6 +119,9 @@ public class Suspension : MonoBehaviour
         wheelMesh = wheel.WheelMesh;
     }
 
+    /// <summary>
+    /// Adjusts this wheel's local y-position based on calculated suspension values.
+    /// </summary>
     public void UpdateWheelPosition()
     {
         // Update the wheel mesh's position based on the length of the suspension.
@@ -129,6 +136,7 @@ public class Suspension : MonoBehaviour
             -CurrSpringLength,
             wheelMesh.transform.localPosition.z);
 
+        // TODO: refactor this into its own script
         #region Visualising suspension length and wheel radius by drawing rays
         // Visualise the suspension length and wheel radius by drawing rays.
         // The ray from DrawRay() is drawn from start to start + dir in world coordinates.
@@ -150,11 +158,19 @@ public class Suspension : MonoBehaviour
         #endregion;
     }
 
+    /// <summary>
+    /// Acts as the suspension by casting a ray downwards to determine whether this 
+    /// wheel is touching the ground.
+    /// </summary>
     private void DetermineIfOnGround()
     {
         OnGround = Physics.Raycast(transform.position, -transform.up, out hit, maxLength + wheel.Radius);
     }
 
+    /// <summary>
+    /// Calculates the length of this spring based on the position of the wheel this 
+    /// script is attached to as it makes contact with the ground.
+    /// </summary>
     private void CalculateLengthOnGround()
     {
         // ======================================================================================
@@ -171,11 +187,18 @@ public class Suspension : MonoBehaviour
         CurrSpringLength = Mathf.Clamp(CurrSpringLength, minLength, maxLength);
     }
 
+    /// <summary>
+    /// Sets the length of this spring to its maximum. Assumes this wheel is not 
+    /// touching the ground.
+    /// </summary>
     private void CalculateLengthInAir()
     {
         CurrSpringLength = maxLength;
     }
 
+    /// <summary>
+    /// Calculates the forces exerted by this spring during the current frame.
+    /// </summary>
     private void CalculateForce()
     {
         // Measure the change in the spring's length over a fixed duration. 
@@ -196,23 +219,23 @@ public class Suspension : MonoBehaviour
         SuspensionForce = fY * transform.up;
     }
 
+    /// <summary>
+    /// Updates spring physics.
+    /// </summary>
     public void FixedUpdatePhysics()
     {
-        #region Calculate suspension physics when the vehicle is on the ground.
         DetermineIfOnGround();
 
+        // Vehicle is on the ground. Perform suspension physics calculations.
         if (OnGround)
         {
             CalculateLengthOnGround();
             CalculateForce();
         }
-        // Otherwise, the vehicle is airborne. Max out suspension length.
+        // Vehicle is airborne. Max out suspension length.
         else
         {
             CalculateLengthInAir();
         }
-        #endregion
-
-        // SetWheelPosition();
     }
 }

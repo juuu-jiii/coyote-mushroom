@@ -18,7 +18,7 @@ public class Gearbox : MonoBehaviour
     public const int NEUTRAL_GEAR = 1;
 
     /// <summary>
-    /// The gear this vehicle is currently in.
+    /// The gear this vehicle is currently in. Initialised to neutral.
     /// </summary>
     public int CurrentGear { get; private set; } = NEUTRAL_GEAR;
 

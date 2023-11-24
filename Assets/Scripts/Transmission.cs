@@ -6,6 +6,30 @@ using UnityEngine;
 /// </summary>
 public class Transmission : MonoBehaviour
 {
+    [Header("Vehicle Component Dependencies")]
+    [Tooltip("Reference to this vehicle's engine script.")]
+    [SerializeField] private Engine engine;
+    [Tooltip("Reference to this vehicle's gearbox script.")]
+    [SerializeField] private Gearbox gearbox;
+    [Tooltip("Reference to this vehicle's rigid body.")]
+    [SerializeField] private Rigidbody vehicleRb;
+    [Tooltip("Animation curve script dictating the relationship between the clutch coefficient and the dot product of the vehicle's forward and velocity vectors.")]
+    [SerializeField] private VehicleController vehicleController;
+
+    [Header("Transmission Data")]
+    [Tooltip("This vehicle's drivetrain type.")]
+    [SerializeField] private DriveType driveType;
+    [Tooltip("Ratio of torque supplied to the front wheels. Used when Drive Type is set to AWD.")]
+    [SerializeField][Range(0, 1)] private float torqueBias;
+    [Tooltip("Minimum possible value that the clutch coefficient can have.")]
+    [SerializeField] private float clutchCoefficientMin;
+    [Tooltip("Maximum possible value that the clutch coefficient can have.")]
+    [SerializeField] private float clutchCoefficientMax;
+
+    [Header("Clutch Coefficient Data")]
+    [Tooltip("The Rigidbody component of the vehicle GameObject.")]
+    [SerializeField] private ClutchCoefficientLerpCurve clutchCoefficientLerpCurve;
+
     /// <summary>
     /// Defines supported transmission types.
     /// </summary>
@@ -15,17 +39,6 @@ public class Transmission : MonoBehaviour
         RWD,
         AWD
     }
-
-    [Tooltip("This vehicle's drivetrain type.")]
-    [SerializeField] private DriveType driveType;
-    [Tooltip("Reference to this vehicle's engine script.")]
-    [SerializeField] private Engine engine;
-    [Tooltip("Reference to this vehicle's gearbox script.")]
-    [SerializeField] private Gearbox gearbox;
-    [Tooltip("Reference to this vehicle's controller script.")]
-    [SerializeField] private VehicleController vehicleController;
-    [Tooltip("Ratio of torque supplied to the front wheels. Used when Drive Type is set to AWD.")]
-    [SerializeField][Range(0, 1)] private float torqueBias;
 
     /// <summary>
     /// There are two sets of wheels in a regular vehicle: one in front and one in the back.
@@ -47,14 +60,28 @@ public class Transmission : MonoBehaviour
     /// </summary>
     private ReadOnlyCollection<Wheel> wheels;
 
-    private float averageDriveAxleAngularVelocity;
+    /// <summary>
+    /// Angular velocity of the drive axle. If there are multiple drive axles, 
+    /// this stores their average angular velocity.
+    /// </summary>
+    private float driveAxleAngularVelocity;
+
+    /// <summary>
+    /// The angular velocity of the clutch disc on the gearbox side of the transmission.
+    /// </summary>
     private float gearboxSideClutchAngularVelocity;
+
+    /// <summary>
+    /// The difference in angular velocities between the clutch discs on the engine and
+    /// gearbox sides of the transmission.
+    /// </summary>
     private float clutchAngularVelocityDifference;
-    public float clutchCoefficient;
-    public float clutchCoefficientMin;
-    public float clutchCoefficientMax;
-    public Rigidbody vehicleRb;
-    public ClutchCoefficientLerpCurve clutchCoefficientLerpCurve;
+
+    /// <summary>
+    /// Scales the amount by which angular velocity differences between gearbox- and engine-
+    /// side clutch discs affect engine acceleration/braking.
+    /// </summary>
+    public float ClutchCoefficient { get; private set; }
 
     /// <summary>
     /// Computes the angular velocity of the drive axle(s) as the average velocities of all driven wheels.
@@ -64,19 +91,19 @@ public class Transmission : MonoBehaviour
         switch (driveType)
         {
             case DriveType.FWD:
-                averageDriveAxleAngularVelocity =
+                driveAxleAngularVelocity =
                     (wheels[0].AngularVelocity
                     + wheels[1].AngularVelocity)
                     * 0.5f;
                 break;
             case DriveType.RWD:
-                averageDriveAxleAngularVelocity =
+                driveAxleAngularVelocity =
                     (wheels[2].AngularVelocity
                     + wheels[3].AngularVelocity)
                     * 0.5f;
                 break;
             case DriveType.AWD:
-                averageDriveAxleAngularVelocity =
+                driveAxleAngularVelocity =
                     (wheels[0].AngularVelocity
                     + wheels[1].AngularVelocity
                     + wheels[2].AngularVelocity
@@ -87,31 +114,41 @@ public class Transmission : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates the angular velocity of the clutch disc on the gearbox side of the transmission.
+    /// </summary>
     private void CalculateGearboxSideClutchAngularVelocity()
     {
-        gearboxSideClutchAngularVelocity = averageDriveAxleAngularVelocity * gearbox.TotalGearRatio;
+        gearboxSideClutchAngularVelocity = driveAxleAngularVelocity * gearbox.TotalGearRatio;
     }
 
+    /// <summary>
+    /// Calculates the value of the clutch coefficient this frame.
+    /// </summary>
     private void CalculateClutchCoefficient()
     {
-        // clutchCoefficient = 0.3f;
-
-        // float t = Mathf.Abs(Vector3.Dot(transform.forward, vehicleRb.velocity.normalized));
-        // clutchCoefficient = Mathf.Lerp(clutchCoefficientMin, clutchCoefficientMax, t);
-
+        // Check how similar the vehicle's (normalised) forward and velocity vectors are.
         float velocityDotDirection = Mathf.Abs(Vector3.Dot(transform.forward, vehicleRb.velocity.normalized));
+
+        // Use the value obtained above to lookup the clutch coefficient's lerp t value.
+        // This is NOT a linear relationship; rather, the clutch coefficient equals 1 when
+        // the dot product returns 1, and 0 for all dot product values <= 0.8
         float t = clutchCoefficientLerpCurve.curve.Evaluate(velocityDotDirection);
-        clutchCoefficient = Mathf.Lerp(clutchCoefficientMin, clutchCoefficientMax, t);
+
+        // Use the t value to lerp between min and max values for the clutch coefficient.
+        ClutchCoefficient = Mathf.Lerp(clutchCoefficientMin, clutchCoefficientMax, t);
     }
 
+    /// <summary>
+    /// Calculates the effect of the wheel angular velocity on the engine's angular 
+    /// velocity this frame.
+    /// </summary>
     public void AccelerateOrBrakeEngine()
     {
-        // CalculateDriveAxleAngularVelocity(); TODO: run this outside
         CalculateGearboxSideClutchAngularVelocity();
         CalculateClutchCoefficient();
 
         // TODO: move constants into a math utils class
-        // TODO: need to start looking into what order the various scripts and components need to be updated in within fixedUpdate
         // If gear is currently in neutral, wheels can neither accelerate nor brake engine.
         if (gearbox.CurrentGear != Gearbox.NEUTRAL_GEAR)
         {
@@ -123,7 +160,7 @@ public class Transmission : MonoBehaviour
             // Calculate how much the wheels accelerate or brake the engine, but don't let the result cause the RPM
             // to rise above its maximum or dip below its minimum.
             engine.AngularVelocity = Mathf.Clamp(
-                engine.AngularVelocity + clutchCoefficient * clutchAngularVelocityDifference,
+                engine.AngularVelocity + ClutchCoefficient * clutchAngularVelocityDifference,
                 engine.IdleRpm * Engine.RPM_TO_RAD_PER_SEC,
                 engine.MaxRpm * Engine.RPM_TO_RAD_PER_SEC);
         }
@@ -148,6 +185,9 @@ public class Transmission : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initialises the transmission of this vehicle.
+    /// </summary>
     public void Init()
     {
         wheels = vehicleController.Wheels;
@@ -171,38 +211,5 @@ public class Transmission : MonoBehaviour
                 torqueRatio[1] = 1 - torqueBias;
                 break;
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        // wheels = vehicleController.Wheels;
-
-        // // Assign torque ratios to each set of wheels depending on the drivetrain layout of the vehicle.
-        // switch (driveType)
-        // {
-        //     case DriveType.FWD:
-        //         // All power gets delivered to the front wheels.
-        //         torqueRatio[0] = 1;
-        //         torqueRatio[1] = 0;
-        //         break;
-        //     case DriveType.RWD:
-        //         // All power gets delivered to the rear wheels.
-        //         torqueRatio[0] = 0;
-        //         torqueRatio[1] = 1;
-        //         break;
-        //     case DriveType.AWD:
-        //         // All power gets delivered to the front wheels.
-        //         torqueRatio[0] = torqueBias;
-        //         torqueRatio[1] = 1 - torqueBias;
-        //         break;
-        // }
-    }
-
-    void FixedUpdate()
-    {
-        // Debug.Log("transmission fixedUpdate");
-        // CalculateWheelDriveTorque();
-        // AccelerateOrBrakeEngine();
     }
 }
