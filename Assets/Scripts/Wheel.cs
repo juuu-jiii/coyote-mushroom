@@ -199,12 +199,21 @@ public class Wheel : MonoBehaviour
     /// </summary>
     public float frictionTorque;
 
-    public float angularAccelerationOfFriction;
+    /// <summary>
+    /// Angular acceleration of friction acting against this wheel's angular velocity.
+    /// </summary>
+    private float angularAccelerationOfFriction;
 
+    /// <summary>
+    /// Amount by which longitudinalSlipVelocity is scaled down to prevent a "pendulum"
+    /// effect where the wheels rotate back and forth in both forward and backwards
+    /// directions. 
+    /// </summary>
     private const float TorqueScale = -10f;
-    public string tractionOrFriction;
 
     private RaycastHit suspensionGroundHit;
+
+    public string tractionOrFriction;
 
     /// <summary>
     /// Calculates inertia of this wheel using the formula for a closed cylinder
