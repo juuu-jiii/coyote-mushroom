@@ -1,10 +1,8 @@
-using System.Collections.ObjectModel;
 using UnityEngine;
 
 public class AntiRollBars : MonoBehaviour
 {
-    [SerializeField] private int antiRollBarStiffness;
-    [SerializeField] private VehicleController vehicleController;
+    [SerializeField] private int antiRollBarStiffness; // 5000
     [SerializeField] private Suspension frontLeft;
     [SerializeField] private Suspension frontRight;
     [SerializeField] private Suspension rearLeft;
@@ -18,7 +16,7 @@ public class AntiRollBars : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void FixedUpdatePhysics()
     {
         float frontSuspensionDelta = frontLeft.CurrSpringLength
                                         - frontRight.CurrSpringLength;
