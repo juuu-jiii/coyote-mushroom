@@ -217,6 +217,7 @@ public class Wheel : MonoBehaviour
     private RaycastHit suspensionGroundHit;
 
     public string tractionOrFriction;
+    public float frictionMultiplier;
 
     /// <summary>
     /// Calculates inertia of this wheel using the formula for a closed cylinder
@@ -390,7 +391,7 @@ public class Wheel : MonoBehaviour
     private void ApplyTyreForce()
     {
         fZ = tyreForce.y;
-        fX = tyreForce.x;
+        fX = tyreForce.x * frictionMultiplier;
     }
 
     /// <summary>
