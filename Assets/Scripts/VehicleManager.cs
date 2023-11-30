@@ -101,7 +101,7 @@ public class VehicleManager : MonoBehaviour
         {
             suspension[i].FixedUpdatePhysics();
             wheels[i].FixedUpdatePhysics();
-            antiRollBars.FixedUpdatePhysics();
+            if (antiRollBars) antiRollBars.FixedUpdatePhysics();
             ApplyForceToRigidbody(suspension[i], wheels[i]);
         }
 
