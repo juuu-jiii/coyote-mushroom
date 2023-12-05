@@ -33,6 +33,8 @@ public class UIManager : MonoBehaviour
 
     [Tooltip("This vehicle's transmission script.")]
     [SerializeField] private Transmission transmission;
+    [Tooltip("This vehicle's braking system script.")]
+    [SerializeField] private BrakingSystem brakingSystem;
 
     /// <summary>
     /// Reference to VehicleController.wheels as a readonly collection.
@@ -106,6 +108,9 @@ public class UIManager : MonoBehaviour
 
                 // $"{wheels[i].WheelPos} fX: {wheels[i].fX}\n" +
                 $"{wheels[i].WheelPos} fY: {suspensions[i].fY}\n" +
+                $"{wheels[i].WheelPos} brake torque: {brakingSystem.brakes[i].brakeTorque}\n" +
+                $"{wheels[i].WheelPos} handbrake torque: {brakingSystem.brakes[i].handbrakeTorque}\n" +
+                $"{wheels[i].WheelPos} combined brake torque: {brakingSystem.brakes[i].combinedTorque}\n" +
                 // $"{wheels[i].WheelPos} fZ: {wheels[i].fZ}\n" +
 
                 // $"{wheels[i].WheelPos} lat slip norm: {wheels[i].lateralSlipNormalised}\n" +
