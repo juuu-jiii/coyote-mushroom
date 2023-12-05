@@ -334,6 +334,11 @@ public class Wheel : MonoBehaviour
             longitudinalSlipNormalised = Mathf.Clamp(longitudinalSlipVelocity * longitudinalStiffness, -1f, 1f);
         }
 
+        // Debug.Log("linearVelocity: " + linearVelocity);
+        // Debug.Log("localLinearVelocityVector.z: " + localLinearVelocityVector.z);
+        // Debug.Log("longitudinalSlipVelocity: " + longitudinalSlipVelocity);
+        // Debug.Log("frictionTorque: " + frictionTorque);
+
         // Vector representation of slip in lateral and longitudinal directions.
         slip = new Vector2(lateralSlipNormalised, longitudinalSlipNormalised);
 
