@@ -200,11 +200,13 @@ public class VehicleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift)) gearbox.GearUp();
         if (Input.GetKeyDown(KeyCode.LeftControl)) gearbox.GearDown();
 
+        // Engage handbrake.
         brakingSystem.handbrakeInput = Convert.ToInt32(Input.GetKey(KeyCode.Space));
 
         // Read player input.
         steerInput = Input.GetAxis("Horizontal");
 
+        // Split input axis handling to separately handle throttle and brake inputs.
         engine.ThrottleInput = Mathf.Clamp(Input.GetAxis("Vertical"), 0f, 1f);
         brakingSystem.brakeInput = -Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 0);
 
