@@ -109,7 +109,7 @@ public class VehicleManager : MonoBehaviour
             ApplyForceToRigidbody(suspension[i], wheels[i]);
         }
 
-        brakingSystem.CalculateAndApplyBrakeTorque();
+        brakingSystem.FixedUpdatePhysics();
 
         // 13. get total drive velocity == CalculateDriveAxleAngularVelocity
         transmission.CalculateDriveAxleAngularVelocity();
