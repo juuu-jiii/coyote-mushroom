@@ -40,7 +40,7 @@ public class BrakingSystem : MonoBehaviour
             brakes[i].handbrakeTorque = handbrakeInput * (i / 2) * brakeStrength * handbrakeStrength;
 
             brakes[i].combinedTorque = Mathf.Clamp(brakes[i].brakeTorque + brakes[i].handbrakeTorque, 0, maxCombinedBrakeTorque);
-            brakes[i].ApplyBrakeTorque();
+            if (brakes[i].combinedTorque > 0f) brakes[i].ApplyBrakeTorque();
         }
     }
 
