@@ -102,7 +102,7 @@ public class Wheel : MonoBehaviour
     /// <summary>
     /// The angular velocity (rad/s) of this wheel.
     /// </summary>
-    public float AngularVelocity { get; private set; }
+    public float AngularVelocity { get; set; }
 
     /// <summary>
     /// Maximum angular velocity given the RPM of the engine and the total gear 
