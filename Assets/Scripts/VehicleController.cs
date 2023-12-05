@@ -95,11 +95,6 @@ public class VehicleController : MonoBehaviour
     private float steerInput;
 
     /// <summary>
-    /// Throttle input from the player controller.
-    /// </summary>
-    private float throttleInput;
-
-    /// <summary>
     /// Ackermann angle for the front right wheel.
     /// </summary>
     private float ackermannAngleLeft;
