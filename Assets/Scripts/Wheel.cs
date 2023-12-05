@@ -328,6 +328,9 @@ public class Wheel : MonoBehaviour
             tractionOrFriction = "friction";
 
             // TODO: consider clamping in range [-1, 1] so friction is not so extreme
+            // TODO: play with clamp values
+            // TODO: make sure this can actually fully stop the car
+            // TODO: see how others have implemented this
             longitudinalSlipNormalised = Mathf.Clamp(longitudinalSlipVelocity * longitudinalStiffness, -1f, 1f);
         }
 
