@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
@@ -27,6 +28,8 @@ public class VehicleController : MonoBehaviour
     [SerializeField] private Engine engine;
     [Tooltip("The vehicle's gearbox script.")]
     [SerializeField] private Gearbox gearbox;
+    [Tooltip("The vehicle's braking system script.")]
+    [SerializeField] private BrakingSystem brakingSystem;
 
     [Header("Centre of Mass")]
     [Tooltip("The Rigidbody component of the vehicle GameObject.")]
@@ -197,9 +200,13 @@ public class VehicleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift)) gearbox.GearUp();
         if (Input.GetKeyDown(KeyCode.LeftControl)) gearbox.GearDown();
 
+        brakingSystem.handbrakeInput = Convert.ToInt32(Input.GetKey(KeyCode.Space));
+
         // Read player input.
         steerInput = Input.GetAxis("Horizontal");
-        engine.ThrottleInput = Input.GetAxis("Vertical");
+
+        engine.ThrottleInput = Mathf.Clamp(Input.GetAxis("Vertical"), 0f, 1f);
+        brakingSystem.brakeInput = -Mathf.Clamp(Input.GetAxis("Vertical"), -1f, 0);
 
         // ======================================================================================
         // ============================= STEERING CALCULATIONS ==================================
