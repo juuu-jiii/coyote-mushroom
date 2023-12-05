@@ -140,7 +140,7 @@ public class Engine : MonoBehaviour
             // prevalent when ThrottleInput is 0 or nearly 0. It has a role in 
             // determining the throttle level at which the transition between
             // back torque and actual driving torque takes place. Notice that, when
-            // the interpolation parameter, t > 1, this transition point gets moved 
+            // the interpolation parameter t > 1, this transition point gets moved 
             // higher.
             //
             // We can therefore also say that t acts to adjust the responsiveness 
@@ -157,6 +157,7 @@ public class Engine : MonoBehaviour
         AngularAcceleration = CurrentTorque / inertia;
 
         // Applying formula: w1 = w0 + alpha * deltaTime
+        // In other words, angularVelocity += angularAcceleration * deltaTime
         // Clamp values between idle/maxRpm (converted to rad/s) to prevent 
         // revs from going out of range.
         AngularVelocity = Mathf.Clamp(
